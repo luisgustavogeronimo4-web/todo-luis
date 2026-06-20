@@ -1,2 +1,3 @@
-import { Toaster } from "sonner";
-export default Toaster;
+import { Toaster as Sonner } from "sonner";
+
+export { Sonner as Toaster };
