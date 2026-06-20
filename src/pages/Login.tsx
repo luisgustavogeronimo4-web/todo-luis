@@ -34,10 +34,14 @@ export const Login = () => {
     setError("");
     setIsLoading(true);
 
-    await login(email, password);
-    navigate("/", { replace: true });
-
-    setIsLoading(false);
+    try {
+      await login(email, password);
+      navigate("/tasks", { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha no login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

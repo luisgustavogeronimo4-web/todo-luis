@@ -15,12 +15,6 @@ export const Home = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/tasks", { replace: true });
-    }
-  }, [user, navigate]);
-
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
@@ -38,15 +32,17 @@ export const Home = () => {
 
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Redirecionando para o gerenciador de tarefas...
+            Área inicial protegida do sistema.
           </p>
         </CardContent>
 
-        <CardFooter>
-          <Button
-            type="button"
+        <CardFooter className="flex flex-col gap-3 sm:flex-row">
+          <Link to="/tasks" className="w-full sm:w-auto">
+            <Button className="w-full">Ir para tarefas</Button>
+          </Link>
+          <Button            type="button"
             variant="outline"
-            className="w-full"
+            className="w-full sm:w-auto"
             onClick={handleLogout}
           >
             Sair
