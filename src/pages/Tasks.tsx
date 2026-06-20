@@ -1,18 +1,60 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { TaskForm } from "@/components/TaskForm";
+import { TaskItem } from "@/components/TaskItem";
+import { taskService } from "@/services/taskService";
+import type { Task } from "@/types/Task";
+import { toast } from "sonner";
 
 export const Tasks = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const loadTasks = () => {
+    setTasks(taskService.getAll());
+  };
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const handleCreate = (task: Omit<Task, "id" | "createdAt">) => {
+    setIsCreating(true);
+    try {
+      taskService.create(task);
+      toast.success("Task created successfully");
+      loadTasks();
+    } catch {
+      toast.error("Failed to create task");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleUpdate = (updatedTask: Task) => {
+    try {
+      taskService.update(updatedTask.id, updatedTask);
+      toast.success("Task updated successfully");
+      loadTasks();
+    } catch {
+      toast.error("Failed to update task");
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    try {
+      taskService.delete(id);
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Task deleted successfully");
+    } catch {
+      toast.error("Failed to delete task");
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -20,39 +62,44 @@ export const Tasks = () => {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Tarefas</CardTitle>
-          <CardDescription>
-            Estrutura inicial da área de tarefas.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            A criação, listagem, edição, conclusão e exclusão de tarefas serão
-            implementadas na próxima fase.
-          </p>
-        </CardContent>
-
-        <CardFooter className="flex flex-col gap-3 sm:flex-row">
-          <Link to="/" className="w-full sm:w-auto">
-            <Button className="w-full" variant="outline">
-              Voltar ao início
+    <main className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Task Manager</CardTitle>
+            <CardDescription>
+              Manage your tasks with create, read, update, and delete operations.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-6">
+              <TaskForm onSubmit={handleCreate} isSubmitting={isCreating} />
+            </div>
+            <div className="space-y-3">
+              {tasks.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No tasks yet. Create your first task above!</p>
+              ) : (
+                tasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onUpdate={handleUpdate}
+                    onDelete={handleDelete}
+                  />
+                ))
+              )}
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Link to="/">
+              <Button variant="outline">Back to Home</Button>
+            </Link>
+            <Button variant="ghost" onClick={handleLogout}>
+              Logout
             </Button>
-          </Link>
-
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full sm:w-auto"
-            onClick={handleLogout}
-          >
-            Sair
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardFooter>
+        </Card>
+      </div>
     </main>
   );
 };
