@@ -1,128 +1,66 @@
-import { supabase } from "@/lib/supabase";
-import type { Task } from "@/types/Task";
+import { createContext, useContext, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { authStorage } from "@/services/localStorage";
+import type { User } from "@/types/User";
 
-export const taskService = {
-  async getActive(userId: string): Promise<Task[]> {
-    const { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("is_deleted", false)
-      .order("created_at", { ascending: false });
+type AuthContextValue = {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+};
 
-    if (error) {
-      console.error("getActive error:", error.message);
-      return [];
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(() => authStorage.getUser());
+
+  const login = async (email: string, password: string) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password) {
+      throw new Error("Email e senha são obrigatórios.");
     }
 
-    return data || [];
-  },
+    // 🔥 ID ESTÁVEL (NUNCA MUDA ENTRE SESSÕES)
+    const stableId = `user_${btoa(normalizedEmail)}`;
 
-  async getDeleted(userId: string): Promise<Task[]> {
-    const { data, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("is_deleted", true)
-      .order("created_at", { ascending: false });
+    const mockUser: User = {
+      id: stableId,
+      name: normalizedEmail.split("@")[0] || "Usuário",
+      email: normalizedEmail,
+    };
 
-    if (error) {
-      console.error("getDeleted error:", error.message);
-      return [];
-    }
+    setUser(mockUser);
+    authStorage.setUser(mockUser);
+  };
 
-    return data || [];
-  },
+  const logout = () => {
+    setUser(null);
+    authStorage.clearUser();
+  };
 
-  async create(
-    task: Omit<Task, "id" | "created_at" | "updated_at">,
-    userId: string
-  ): Promise<Task | null> {
-    const { data, error } = await supabase
-      .from("tasks")
-      .insert({
-        ...task,
-        user_id: userId,
-        is_deleted: false,
-        is_completed: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+  const value = useMemo(
+    () => ({
+      user,
+      login,
+      logout,
+    }),
+    [user],
+  );
 
-    if (error) {
-      console.error("create error:", error.message);
-      return null;
-    }
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-    return data;
-  },
+export const useAuth = () => {
+  const context = useContext(AuthContext);
 
-  async update(id: string, updates: Partial<Task>): Promise<Task | null> {
-    const { data, error } = await supabase
-      .from("tasks")
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select()
-      .single();
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de AuthProvider.");
+  }
 
-    if (error) {
-      console.error("update error:", error.message);
-      return null;
-    }
-
-    return data;
-  },
-
-  async delete(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from("tasks")
-      .update({
-        is_deleted: true,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (error) {
-      console.error("delete error:", error.message);
-      return false;
-    }
-
-    return true;
-  },
-
-  async restore(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from("tasks")
-      .update({
-        is_deleted: false,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (error) {
-      console.error("restore error:", error.message);
-      return false;
-    }
-
-    return true;
-  },
-
-  async deletePermanently(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from("tasks")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("deletePermanently error:", error.message);
-      return false;
-    }
-
-    return true;
-  },
+  return context;
 };
