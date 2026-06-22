@@ -8,13 +8,23 @@ import type { Task } from "@/types/Task";
 
 interface TaskItemProps {
   task: Task;
-  onEdit: (task: Task) => void;
-  onDelete: (task: Task) => void;
-  onRestore?: (task: Task) => void;
-  onDeletePermanently?: (task: Task) => void;
+  /** Edit a task (active only) */
+  onEdit?: (task: Task) => void;
+  /** Soft‑delete (move to trash) */
+  onDelete?: (taskId: string) => void;
+  /** Restore from trash */
+  onRestore?: (taskId: string) => void;
+  /** Hard‑delete permanently */
+  onDeletePermanently?: (taskId: string) => void;
+  /** Toggle completed flag */
   onToggleComplete?: (task: Task) => void;
 }
 
+/**
+ * The Supabase table uses `completed` (boolean) and `deleted_at` (timestamp|null).
+ * The original code referenced `is_completed` / `is_deleted`, which caused runtime errors.
+ * We now read the correct fields and guard against null task objects.
+ */
 export const TaskItem = ({
   task,
   onEdit,
@@ -23,15 +33,18 @@ export const TaskItem = ({
   onDeletePermanently,
   onToggleComplete,
 }: TaskItemProps) => {
-  const isDeleted = task.is_deleted;
+  if (!task) return null;
+
+  const isDeleted = !!task.deleted_at;
+  const isCompleted = !!task.completed;
 
   return (
     <Card className="p-4 mb-3">
       <div className="flex items-start gap-3">
         <Checkbox
-          checked={task.is_completed}
+          checked={isCompleted}
           className="mt-1"
-          disabled
+          disabled={isDeleted}
           onCheckedChange={() => onToggleComplete?.(task)}
         />
         <div className="flex-1">
@@ -49,23 +62,39 @@ export const TaskItem = ({
         </div>
         <div className="flex gap-1">
           {isDeleted ? (
-            <div>
-              <Button variant="ghost" size="sm" onClick={() => onRestore?.(task)}>
+            <>
+              <Button variant="ghost" size="sm" onClick={() => onRestore?.(task.id)}>
                 <RotateCcw className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => onDeletePermanently?.(task)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  if (window.confirm("Tem certeza que deseja apagar esta tarefa permanentemente?")) {
+                    onDeletePermanently?.(task.id);
+                  }
+                }}
+              >
                 <Trash className="h-4 w-4" />
               </Button>
-            </div>
+            </>
           ) : (
-            <div>
-              <Button variant="ghost" size="sm" onClick={() => onEdit(task)}>
+            <>
+              <Button variant="ghost" size="sm" onClick={() => onEdit?.(task)}>
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => onDelete(task)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  if (window.confirm("Tem certeza que deseja mover esta tarefa para a lixeira?")) {
+                    onDelete?.(task.id);
+                  }
+                }}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </div>
+            </>
           )}
         </div>
       </div>

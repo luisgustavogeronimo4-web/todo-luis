@@ -35,6 +35,9 @@ export const Tasks = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
+  // a simple key to force TaskForm reset after a successful create
+  const [formKey, setFormKey] = useState(0);
+
   const loadTasks = async () => {
     try {
       const [active, deleted] = await Promise.all([
@@ -59,10 +62,12 @@ export const Tasks = () => {
     try {
       const created = await taskService.create(task);
       // prepend newly created task (only if not completed)
-      if (!created.is_completed) {
+      if (!created?.completed) {
         setActiveTasks((prev) => [created, ...prev]);
       }
       toast.success("Task created successfully");
+      // reset form fields by changing key
+      setFormKey((k) => k + 1);
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create task");
     } finally {
@@ -72,10 +77,10 @@ export const Tasks = () => {
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      await taskService.update(task.id, { is_completed: !task.is_completed });
-      // optimistic UI: toggle locally
+      await taskService.update(task.id, { completed: !task.completed });
+      // optimistic UI update
       setActiveTasks((prev) =>
-        prev.map((t) => (t.id === task.id ? { ...t, is_completed: !t.is_completed } : t)),
+        prev.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)),
       );
       toast.success("Task status updated");
     } catch {
@@ -108,7 +113,6 @@ export const Tasks = () => {
         ...data,
         updated_at: new Date().toISOString(),
       });
-      // replace in active list
       setActiveTasks((prev) =>
         prev.map((t) => (t.id === updated.id ? updated : t)),
       );
@@ -131,7 +135,6 @@ export const Tasks = () => {
           const ok = await taskService.softDelete(id);
           if (ok) {
             setActiveTasks((prev) => prev.filter((t) => t.id !== id));
-            // reload trash list
             const trash = await taskService.getDeleted();
             setTrashTasks(trash);
             toast.success("Task moved to trash");
@@ -153,7 +156,6 @@ export const Tasks = () => {
         try {
           const ok = await taskService.restore(id);
           if (ok) {
-            // move back to active list
             const restored = await taskService.getActive();
             setActiveTasks(restored);
             const trash = await taskService.getDeleted();
@@ -206,7 +208,8 @@ export const Tasks = () => {
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              <TaskForm onSubmit={handleCreate} isSubmitting={isCreating} />
+              {/* key forces TaskForm to remount and clear its internal state */}
+              <TaskForm key={formKey} onSubmit={handleCreate} isSubmitting={isCreating} />
             </div>
 
             <div className="flex flex-col md:flex-row gap-4">
@@ -223,8 +226,8 @@ export const Tasks = () => {
                       key={task.id}
                       task={task}
                       onEdit={handleUpdate}
-                      onDelete={() => handleDelete(task.id)}
-                      onToggleComplete={() => handleToggleComplete(task)}
+                      onDelete={handleDelete}
+                      onToggleComplete={handleToggleComplete}
                     />
                   ))
                 )}
@@ -240,9 +243,9 @@ export const Tasks = () => {
                     <TaskItem
                       key={task.id}
                       task={task}
-                      onRestore={() => handleRestore(task.id)}
-                      onDeletePermanently={() => handlePermanentDelete(task.id)}
-                      onToggleComplete={() => handleToggleComplete(task)}
+                      onRestore={handleRestore}
+                      onDeletePermanently={handlePermanentDelete}
+                      onToggleComplete={handleToggleComplete}
                     />
                   ))
                 )}
