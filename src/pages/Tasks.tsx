@@ -13,6 +13,7 @@ import {
 import { TaskForm } from "@/components/TaskForm";
 import { TaskItem } from "@/components/TaskItem";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { TaskModal } from "@/components/TaskModal";
 import { taskService } from "@/services/taskService";
 import type { Task } from "@/types/Task";
 import { toast } from "sonner";
@@ -32,6 +33,10 @@ export const Tasks = () => {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmDescription, setConfirmDescription] = useState("");
+
+  // edit modal state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTask, setEditTask] = useState<Task | null>(null);
 
   const loadTasks = async () => {
     if (!user?.id) {
@@ -87,26 +92,27 @@ export const Tasks = () => {
   };
 
   const handleUpdate = (task: Task) => {
-    openConfirm(
-      "Confirmar edição",
-      "Deseja realmente alterar esta tarefa?",
-      async () => {
-        setIsUpdating(task.id);
-        try {
-          await taskService.update(task.id, {
-            title: task.title,
-            description: task.description,
-            updated_at: new Date().toISOString(),
-          });
-          toast.success("Task updated successfully");
-          await loadTasks();
-        } catch {
-          toast.error("Failed to update task");
-        } finally {
-          setIsUpdating(null);
-        }
-      },
-    );
+    setEditTask(task);
+    setEditOpen(true);
+  };
+
+  const submitEdit = async (data: Omit<Task, "id" | "created_at" | "updated_at">) => {
+    if (!editTask) return;
+    setIsUpdating(editTask.id);
+    try {
+      await taskService.update(editTask.id, {
+        ...data,
+        updated_at: new Date().toISOString(),
+      });
+      toast.success("Task updated successfully");
+      await loadTasks();
+    } catch {
+      toast.error("Failed to update task");
+    } finally {
+      setIsUpdating(null);
+      setEditOpen(false);
+      setEditTask(null);
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -201,7 +207,7 @@ export const Tasks = () => {
                       task={task}
                       onEdit={handleUpdate}
                       onDelete={() => handleDelete(task.id)}
-                      onToggleComplete={handleToggleComplete}
+                      onToggleComplete={() => handleToggleComplete(task)}
                     />
                   ))
                 )}
@@ -219,7 +225,7 @@ export const Tasks = () => {
                       task={task}
                       onRestore={() => handleRestore(task.id)}
                       onDeletePermanently={() => handlePermanentDelete(task.id)}
-                      onToggleComplete={handleToggleComplete}
+                      onToggleComplete={() => handleToggleComplete(task)}
                     />
                   ))
                 )}
@@ -248,6 +254,15 @@ export const Tasks = () => {
         confirmText="Confirmar"
         cancelText="Cancelar"
         variant="default"
+      />
+
+      {/* Edit task modal */}
+      <TaskModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        onSubmit={submitEdit}
+        initialData={editTask ? { title: editTask.title, description: editTask.description } : undefined}
+        isSubmitting={isUpdating !== null}
       />
     </main>
   );
