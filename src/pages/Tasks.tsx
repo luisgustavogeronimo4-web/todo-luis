@@ -35,7 +35,7 @@ export const Tasks = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
-  // a simple key to force TaskForm reset after a successful create
+  // key to force TaskForm reset after a successful create
   const [formKey, setFormKey] = useState(0);
 
   const loadTasks = async () => {
@@ -61,8 +61,8 @@ export const Tasks = () => {
     setIsCreating(true);
     try {
       const created = await taskService.create(task);
-      // prepend newly created task (only if not completed)
-      if (!created?.completed) {
+      // prepend newly created task only if it exists and is not completed
+      if (created && !created.completed) {
         setActiveTasks((prev) => [created, ...prev]);
       }
       toast.success("Task created successfully");
@@ -78,7 +78,6 @@ export const Tasks = () => {
   const handleToggleComplete = async (task: Task) => {
     try {
       await taskService.update(task.id, { completed: !task.completed });
-      // optimistic UI update
       setActiveTasks((prev) =>
         prev.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)),
       );
@@ -208,7 +207,6 @@ export const Tasks = () => {
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              {/* key forces TaskForm to remount and clear its internal state */}
               <TaskForm key={formKey} onSubmit={handleCreate} isSubmitting={isCreating} />
             </div>
 
@@ -221,15 +219,17 @@ export const Tasks = () => {
                     No tasks yet. Create your first task above!
                   </p>
                 ) : (
-                  activeTasks.map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onEdit={handleUpdate}
-                      onDelete={handleDelete}
-                      onToggleComplete={handleToggleComplete}
-                    />
-                  ))
+                  activeTasks
+                    .filter((t) => t && t.id) // guard against null/undefined
+                    .map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onEdit={handleUpdate}
+                        onDelete={handleDelete}
+                        onToggleComplete={handleToggleComplete}
+                      />
+                    ))
                 )}
               </section>
 
@@ -239,15 +239,17 @@ export const Tasks = () => {
                 {trashTasks.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">Trash is empty.</p>
                 ) : (
-                  trashTasks.map((task) => (
-                    <TaskItem
-                      key={task.id}
-                      task={task}
-                      onRestore={handleRestore}
-                      onDeletePermanently={handlePermanentDelete}
-                      onToggleComplete={handleToggleComplete}
-                    />
-                  ))
+                  trashTasks
+                    .filter((t) => t && t.id) // guard against null/undefined
+                    .map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onRestore={handleRestore}
+                        onDeletePermanently={handlePermanentDelete}
+                        onToggleComplete={handleToggleComplete}
+                      />
+                    ))
                 )}
               </section>
             </div>
