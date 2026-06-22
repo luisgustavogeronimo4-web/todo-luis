@@ -35,13 +35,16 @@ export const Tasks = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
+  /** Load active (non‑deleted) and trash tasks from Supabase */
   const loadTasks = async () => {
     try {
       const [active, deleted] = await Promise.all([
         taskService.getActive(),
         taskService.getDeleted(),
       ]);
-      setActiveTasks(active);
+
+      // Show only tasks that are NOT completed in the active list
+      setActiveTasks(active.filter((t) => !t.is_completed));
       setTrashTasks(deleted);
     } catch (error: any) {
       console.error("loadTasks error:", error.message);
@@ -54,12 +57,22 @@ export const Tasks = () => {
     loadTasks();
   }, [user?.id]);
 
-  const handleCreate = async (task: Omit<Task, "id" | "created_at" | "updated_at">) => {
+  /** Create a new task and prepend it to the active list */
+  const handleCreate = async (
+    task: Omit<Task, "id" | "created_at" | "updated_at">,
+  ) => {
     setIsCreating(true);
     try {
-      await taskService.create(task);
-      toast.success("Task created successfully");
-      await loadTasks();
+      const created = await taskService.create(task);
+      if (created) {
+        // prepend only if the task is not completed (new tasks start incomplete)
+        if (!created.is_completed) {
+          setActiveTasks((prev) => [created, ...prev]);
+        }
+        toast.success("Task created successfully");
+      } else {
+        toast.error("Failed to create task");
+      }
     } catch {
       toast.error("Failed to create task");
     } finally {
@@ -77,7 +90,11 @@ export const Tasks = () => {
     }
   };
 
-  const openConfirm = (title: string, description: string, action: () => void) => {
+  const openConfirm = (
+    title: string,
+    description: string,
+    action: () => void,
+  ) => {
     setConfirmTitle(title);
     setConfirmDescription(description);
     setConfirmAction(() => action);
@@ -89,9 +106,10 @@ export const Tasks = () => {
     setEditOpen(true);
   };
 
-  const submitEdit = async (data: Omit<Task, "id" | "created_at" | "updated_at">) => {
+  const submitEdit = async (
+    data: Omit<Task, "id" | "created_at" | "updated_at">,
+  ) => {
     if (!editTask) return;
-    // confirmation before saving edits
     const confirmed = window.confirm(
       "Tem certeza que deseja salvar as alterações nesta tarefa?",
     );
@@ -219,14 +237,18 @@ export const Tasks = () => {
               <section className="md:w-1/2">
                 <h2 className="text-lg font-medium mb-4">Trash</h2>
                 {trashTasks.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">Trash is empty.</p>
+                  <p className="text-center text-gray-500 py-8">
+                    Trash is empty.
+                  </p>
                 ) : (
                   trashTasks.map((task) => (
                     <TaskItem
                       key={task.id}
                       task={task}
                       onRestore={() => handleRestore(task.id)}
-                      onDeletePermanently={() => handlePermanentDelete(task.id)}
+                      onDeletePermanently={() =>
+                        handlePermanentDelete(task.id)
+                      }
                       onToggleComplete={() => handleToggleComplete(task)}
                     />
                   ))
@@ -264,7 +286,9 @@ export const Tasks = () => {
         onOpenChange={setEditOpen}
         onSubmit={submitEdit}
         initialData={
-          editTask ? { title: editTask.title, description: editTask.description } : undefined
+          editTask
+            ? { title: editTask.title, description: editTask.description }
+            : undefined
         }
         isSubmitting={isUpdating !== null}
       />
