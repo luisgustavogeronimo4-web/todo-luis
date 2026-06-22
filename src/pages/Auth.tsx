@@ -14,6 +14,7 @@ export const Auth = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState(""); // success / info messages
 
   // shared form state
   const [email, setEmail] = useState("");
@@ -22,12 +23,19 @@ export const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setInfo("");
     setLoading(true);
     try {
       await login(email, password);
       navigate("/tasks", { replace: true });
     } catch (err: any) {
-      setError(err.message ?? "Falha ao entrar");
+      // Supabase returns a 400 for wrong credentials
+      const msg = err?.message?.toLowerCase?.() ?? "";
+      if (msg.includes("invalid") || msg.includes("incorrect")) {
+        setError("E‑mail ou senha inválidos. Se ainda não tem conta, use a aba de Cadastro.");
+      } else {
+        setError(err.message ?? "Falha ao entrar");
+      }
     } finally {
       setLoading(false);
     }
@@ -36,14 +44,20 @@ export const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setInfo("");
     setLoading(true);
     try {
       await signup(email, password);
-      // after sign‑up we can directly log the user in
-      await login(email, password);
-      navigate("/tasks", { replace: true });
+      // Sign‑up succeeded – Supabase usually sends a confirmation e‑mail
+      setInfo("Cadastro realizado! Verifique seu e‑mail para confirmar a conta antes de fazer o login.");
+      // Optionally, you could auto‑login after confirmation, but we keep the flow simple.
     } catch (err: any) {
-      setError(err.message ?? "Falha ao cadastrar");
+      const msg = err?.message?.toLowerCase?.() ?? "";
+      if (msg.includes("already")) {
+        setError("Este e‑mail já está cadastrado. Tente fazer login ou recupere a senha.");
+      } else {
+        setError(err.message ?? "Falha ao cadastrar");
+      }
     } finally {
       setLoading(false);
     }
@@ -65,12 +79,18 @@ export const Auth = () => {
             <TabsTrigger value="signup">Cadastrar</TabsTrigger>
           </TabsList>
 
+          {/* ---------- Sign In ---------- */}
           <TabsContent value="signin">
             <form onSubmit={handleSignIn}>
               <CardContent className="space-y-4">
                 {error && (
                   <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     {error}
+                  </p>
+                )}
+                {info && (
+                  <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
+                    {info}
                   </p>
                 )}
                 <div className="space-y-2">
@@ -106,12 +126,18 @@ export const Auth = () => {
             </form>
           </TabsContent>
 
+          {/* ---------- Sign Up ---------- */}
           <TabsContent value="signup">
             <form onSubmit={handleSignUp}>
               <CardContent className="space-y-4">
                 {error && (
                   <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     {error}
+                  </p>
+                )}
+                {info && (
+                  <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
+                    {info}
                   </p>
                 )}
                 <div className="space-y-2">
