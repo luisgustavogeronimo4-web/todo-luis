@@ -1,4 +1,4 @@
-"import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Task } from "@/types/Task";
 
@@ -32,7 +32,10 @@ export const taskService = {
     return data || [];
   },
 
-  async create(task: Omit<Task, "id" | "created_at" | "updated_at">, userId: string) {
+  async create(
+    task: Omit<Task, "id" | "created_at" | "updated_at">,
+    userId: string,
+  ) {
     const { data, error } = await supabase
       .from(TABLE_NAME)
       .insert({ ...task, user_id: userId })
@@ -44,7 +47,10 @@ export const taskService = {
     return data;
   },
 
-  async update(taskId: string, updates: Partial<Omit<Task, "id" | "created_at" | "updated_at">>) {
+  async update(
+    taskId: string,
+    updates: Partial<Omit<Task, "id" | "created_at" | "updated_at">>,
+  ) {
     const { data, error } = await supabase
       .from(TABLE_NAME)
       .update(updates)
