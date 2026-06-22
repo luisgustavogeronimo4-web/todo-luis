@@ -1,66 +1,95 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import type { ReactNode } from "react";
-import { authStorage } from "@/services/localStorage";
-import type { User } from "@/types/User";
+"import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+import type { Task } from "@/types/Task";
 
-type AuthContextValue = {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-};
+const TABLE_NAME = "tasks";
 
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => authStorage.getUser());
-
-  const login = async (email: string, password: string) => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail || !password) {
-      throw new Error("Email e senha são obrigatórios.");
+export const taskService = {
+  async getActive(userId: string) {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_deleted", false)
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("getActive error:", error.message);
+      return [];
     }
+    return data || [];
+  },
 
-    // 🔥 ID ESTÁVEL (NUNCA MUDA ENTRE SESSÕES)
-    const stableId = `user_${btoa(normalizedEmail)}`;
+  async getDeleted(userId: string) {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_deleted", true);
+    if (error) {
+      console.error("getDeleted error:", error.message);
+      return [];
+    }
+    return data || [];
+  },
 
-    const mockUser: User = {
-      id: stableId,
-      name: normalizedEmail.split("@")[0] || "Usuário",
-      email: normalizedEmail,
-    };
+  async create(task: Omit<Task, "id" | "created_at" | "updated_at">, userId: string) {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .insert({ ...task, user_id: userId })
+      .single();
+    if (error) {
+      console.error("create error:", error.message);
+      return null;
+    }
+    return data;
+  },
 
-    setUser(mockUser);
-    authStorage.setUser(mockUser);
-  };
+  async update(taskId: string, updates: Partial<Omit<Task, "id" | "created_at" | "updated_at">>) {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .update(updates)
+      .eq("id", taskId)
+      .single();
+    if (error) {
+      console.error("update error:", error.message);
+      return null;
+    }
+    return data;
+  },
 
-  const logout = () => {
-    setUser(null);
-    authStorage.clearUser();
-  };
+  async delete(taskId: string) {
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({ is_deleted: true })
+      .eq("id", taskId);
+    if (error) {
+      console.error("delete error:", error.message);
+      return false;
+    }
+    return true;
+  },
 
-  const value = useMemo(
-    () => ({
-      user,
-      login,
-      logout,
-    }),
-    [user],
-  );
+  async restore(taskId: string) {
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .update({ is_deleted: false })
+      .eq("id", taskId);
+    if (error) {
+      console.error("restore error:", error.message);
+      return false;
+    }
+    return true;
+  },
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider.");
-  }
-
-  return context;
+  async deletePermanently(taskId: string) {
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .delete()
+      .eq("id", taskId);
+    if (error) {
+      console.error("deletePermanently error:", error.message);
+      return false;
+    }
+    return true;
+  },
 };
