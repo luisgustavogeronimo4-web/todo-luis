@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const mockUser: User = {
-      id: `user-${Date.now()}`,
+      id: `user_${Date.now()}`,
       name: normalizedEmail.split("@")[0] || "Usuário",
       email: normalizedEmail,
     };
@@ -36,17 +36,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     authStorage.clearUser();
   };
 
-  const value = useMemo(
-    () => ({
-      user,
-      login,
-      logout,
-    }),
-    [user],
-  );
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -54,8 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider.");
-  }
+  if (!context) throw new Error("useAuth deve ser usado dentro de AuthProvider");
   return context;
 };
