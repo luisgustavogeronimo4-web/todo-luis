@@ -10,8 +10,9 @@ interface TaskItemProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-  onRestore: (task: Task) => void;
-  onDeletePermanently: (task: Task) => void;
+  onRestore?: (task: Task) => void;
+  onDeletePermanently?: (task: Task) => void;
+  onToggleComplete?: (task: Task) => void;
 }
 
 export const TaskItem = ({
@@ -20,16 +21,18 @@ export const TaskItem = ({
   onDelete,
   onRestore,
   onDeletePermanently,
+  onToggleComplete,
 }: TaskItemProps) => {
   const isDeleted = task.is_deleted;
 
   return (
     <Card className="p-4 mb-3">
       <div className="flex items-start gap-3">
-        <Checkbox 
-          checked={task.is_completed} 
-          className="mt-1" 
-          disabled 
+        <Checkbox
+          checked={task.is_completed}
+          className="mt-1"
+          disabled
+          onCheckedChange={() => onToggleComplete?.(task)}
         />
         <div className="flex-1">
           <h3 className={isDeleted ? "line-through text-gray-500" : "font-medium"}>
@@ -47,35 +50,19 @@ export const TaskItem = ({
         <div className="flex gap-1">
           {isDeleted ? (
             <div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onRestore(task)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onRestore?.(task)}>
                 <RotateCcw className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onDeletePermanently(task)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onDeletePermanently?.(task)}>
                 <Trash className="h-4 w-4" />
               </Button>
             </div>
           ) : (
             <div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onEdit(task)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onEdit(task)}>
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => onDelete(task)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => onDelete(task)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
