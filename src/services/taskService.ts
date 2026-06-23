@@ -1,24 +1,3 @@
-import { supabase } from "@/lib/supabase";
-import type { Task } from "@/types/Task";
-
-const TABLE_NAME = "tasks";
-
-/**
- * Helper to obtain the current logged‑in user id from Supabase.
- * Throws if no user is authenticated so that RLS policies receive a valid session.
- */
-async function getCurrentUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error("Supabase auth error:", error.message);
-    throw new Error("Usuário não autenticado. Faça login novamente.");
-  }
-  if (!data?.user?.id) {
-    throw new Error("Usuário não autenticado. Faça login novamente.");
-  }
-  return data.user.id;
-}
-
 export const taskService = {
   /** Fetch tasks that are not soft‑deleted */
   async getActive(): Promise<Task[]> {
