@@ -40,7 +40,7 @@ const LoginRegisterScreen = () => {
         </div>
         <h1 className="text-4xl font-bold text-white mb-4">TO DO DO Luís</h1>
         <p className="text-lg text-zinc-200">
-          Organize suas tarefas e domine sua rotina com eficiência máxima.
+          Organize suas tarefas, domine sua rotina e alcance o pico da sua produtividade.
         </p>
       </div>
 
@@ -48,16 +48,16 @@ const LoginRegisterScreen = () => {
       <div className="flex items-center justify-center bg-zinc-950 p-8">
         <div className="w-full max-w-md space-y-6">
           <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 gap-2 bg-zinc-800 rounded-lg p-1">
+            <TabsList className="grid w-full grid-cols-2 gap-2 bg-zinc-800 rounded-full p-1">
               <TabsTrigger
                 value="login"
-                className="rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+                className="rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
               >
                 Entrar
               </TabsTrigger>
               <TabsTrigger
                 value="signup"
-                className="rounded-md data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+                className="rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
               >
                 Criar Conta
               </TabsTrigger>
@@ -76,7 +76,7 @@ const LoginRegisterScreen = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500"
+                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
                   />
                 </div>
                 <div>
@@ -87,7 +87,7 @@ const LoginRegisterScreen = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500"
+                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
                   />
                 </div>
                 <Button
@@ -113,7 +113,7 @@ const LoginRegisterScreen = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500"
+                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
                   />
                 </div>
                 <div>
@@ -124,7 +124,8 @@ const LoginRegisterScreen = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500"
+                    className="bg-zinc-800 border-zinc-700 focus:border-blue-5
+                    00 rounded-md"
                   />
                 </div>
                 <Button
