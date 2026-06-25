@@ -18,6 +18,7 @@ import { taskService } from "@/services/taskService";
 import type { Task } from "@/types/Task";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export const Tasks = () => {
   const { user, logout } = useAuth();
@@ -293,6 +294,7 @@ export const Tasks = () => {
           isSubmitting={isUpdating !== null}
         />
       </div>
+      <Footer />
     </>
   );
 };
