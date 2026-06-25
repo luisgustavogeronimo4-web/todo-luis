@@ -31,121 +31,125 @@ const LoginRegisterScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
-      <div className="w-full max-w-md space-y-6 bg-gray-800 border border-gray-700 rounded-lg p-8">
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-4xl font-bold text-white">DL</span>
-          <Star className="h-6 w-6 text-white fill-white" />
+    <div className="min-h-screen flex items-center justify-center bg-[#d31212] p-4">
+      <div className="relative w-full max-w-md bg-black border-4 border-black rotate-2 skew-x-6">
+        {/* decorative cut‑out overlay */}
+        <div className="absolute inset-0 pointer-events-none border-4 border-black -rotate-3 skew-y-3" />
+        <div className="relative p-8 space-y-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="text-4xl font-black text-white">DL</span>
+            <Star className="h-6 w-6 text-white fill-white" />
+          </div>
+          <h1 className="text-center text-3xl font-black tracking-tighter text-white uppercase">
+            Gerenciador de Tarefas
+          </h1>
+          <p className="text-center text-white/80">
+            Acesse sua conta ou crie uma nova.
+          </p>
+
+          <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
+            <TabsList className="grid w-full grid-cols-2 gap-2 bg-black border-4 border-white -rotate-2">
+              <TabsTrigger
+                value="login"
+                className="bg-white text-black border-4 border-black rotate-1 hover:bg-white/80"
+              >
+                Entrar
+              </TabsTrigger>
+              <TabsTrigger
+                value="signup"
+                className="bg-white text-black border-4 border-black -rotate-1 hover:bg-white/80"
+              >
+                Cadastrar
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="login">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                {error && tab === "login" && (
+                  <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
+                )}
+                <div>
+                  <label className="block text-sm font-black text-white tracking-wider uppercase">
+                    EmAiL
+                  </label>
+                  <Input
+                    type="email"
+                    placeholder="usuario@exemplo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                    className="bg-black text-white border-4 border-black -rotate-1 focus:border-white focus:ring-0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-black text-white tracking-wider uppercase">
+                    sEnHa
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    required
+                    className="bg-black text-white border-4 border-black rotate-1 focus:border-white focus:ring-0"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-white text-black border-4 border-black -rotate-2 hover:bg-white hover:text-black hover:translate-x-1 hover:translate-y-1 transition-all duration-100 ease-in-out"
+                >
+                  {loading ? "Aguarde..." : "Entrar"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                {error && tab === "signup" && (
+                  <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
+                )}
+                <div>
+                  <label className="block text-sm font-black text-white tracking-wider uppercase">
+                    EmAiL
+                  </label>
+                  <Input
+                    type="email"
+                    placeholder="usuario@exemplo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                    className="bg-black text-white border-4 border-black rotate-2 focus:border-white focus:ring-0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-black text-white tracking-wider uppercase">
+                    sEnHa
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    required
+                    className="bg-black text-white border-4 border-black -rotate-2 focus:border-white focus:ring-0"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-white text-black border-4 border-black rotate-2 hover:bg-white hover:text-black hover:translate-x-1 hover:translate-y-1 transition-all duration-100 ease-in-out"
+                >
+                  {loading ? "Aguarde..." : "Cadastrar"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
         </div>
-        <h1 className="text-center text-2xl font-extrabold text-white mb-2">
-          Gerenciador de Tarefas
-        </h1>
-        <p className="text-center text-gray-300 mb-6">
-          Acesse sua conta ou crie uma nova.
-        </p>
-
-        <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
-          <TabsList className="grid w-full grid-cols-2 gap-2 bg-gray-700 rounded-md p-1">
-            <TabsTrigger
-              value="login"
-              className="rounded-md data-[state=active]:bg-gray-600 data-[state=active]:text-white transition-colors"
-            >
-              Entrar
-            </TabsTrigger>
-            <TabsTrigger
-              value="signup"
-              className="rounded-md data-[state=active]:bg-gray-600 data-[state=active]:text-white transition-colors"
-            >
-              Cadastrar
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="login">
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-              {error && tab === "login" && (
-                <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  placeholder="usuario@exemplo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  required
-                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Senha
-                </label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gray-600 hover:bg-gray-500 text-white"
-              >
-                {loading ? "Aguarde..." : "Entrar"}
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="signup">
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-              {error && tab === "signup" && (
-                <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  placeholder="usuario@exemplo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  required
-                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Senha
-                </label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gray-600 hover:bg-gray-500 text-white"
-              >
-                {loading ? "Aguarde..." : "Cadastrar"}
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
