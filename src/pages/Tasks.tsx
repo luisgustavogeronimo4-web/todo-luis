@@ -220,7 +220,7 @@ export const Tasks = () => {
                   </p>
                 ) : (
                   activeTasks
-                    .filter((t) => t && t.id) // guard against null/undefined
+                    .filter((t) => t && t.id)
                     .map((task) => (
                       <TaskItem
                         key={task.id}
@@ -240,7 +240,7 @@ export const Tasks = () => {
                   <p className="text-center text-gray-500 py-8">Trash is empty.</p>
                 ) : (
                   trashTasks
-                    .filter((t) => t && t.id) // guard against null/undefined
+                    .filter((t) => t && t.id)
                     .map((task) => (
                       <TaskItem
                         key={task.id}

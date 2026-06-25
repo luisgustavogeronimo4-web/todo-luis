@@ -31,56 +31,56 @@ const LoginRegisterScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50 p-4">
-      <div className="w-full max-w-md mx-auto space-y-6 bg-amber-100 border-2 border-zinc-900 p-6">
-        {/* Header com ícone retro */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="text-4xl font-bold text-zinc-900">DL</span>
-          <Star className="h-6 w-6 text-zinc-900 fill-zinc-900" />
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+      <div className="w-full max-w-md space-y-6 bg-gray-800 border border-gray-700 rounded-lg p-8">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="text-4xl font-bold text-white">DL</span>
+          <Star className="h-6 w-6 text-white fill-white" />
         </div>
-        <h1 className="text-center text-2xl font-extrabold text-zinc-900 mb-2">
-          TO DO DO Luís
+        <h1 className="text-center text-2xl font-extrabold text-white mb-2">
+          Gerenciador de Tarefas
         </h1>
-        <p className="text-center text-sm text-zinc-800 mb-6">
-          Organize suas tarefas, domine sua rotina e alcance o pico da sua produtividade.
+        <p className="text-center text-gray-300 mb-6">
+          Acesse sua conta ou crie uma nova.
         </p>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
-          <TabsList className="grid w-full grid-cols-2 gap-2 bg-amber-200 border-2 border-zinc-900 rounded-md p-1">
+          <TabsList className="grid w-full grid-cols-2 gap-2 bg-gray-700 rounded-md p-1">
             <TabsTrigger
               value="login"
-              className="rounded-md data-[state=active]:bg-amber-400 data-[state=active]:text-zinc-900 transition-colors"
+              className="rounded-md data-[state=active]:bg-gray-600 data-[state=active]:text-white transition-colors"
             >
               Entrar
             </TabsTrigger>
             <TabsTrigger
               value="signup"
-              className="rounded-md data-[state=active]:bg-amber-400 data-[state=active]:text-zinc-900 transition-colors"
+              className="rounded-md data-[state=active]:bg-gray-600 data-[state=active]:text-white transition-colors"
             >
-              Criar Conta
+              Cadastrar
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               {error && tab === "login" && (
-                <p className="rounded-md bg-red-200 text-red-800 p-2">{error}</p>
+                <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
               )}
               <div>
-                <label className="block text-sm font-medium text-zinc-800 mb-1">
-                  E‑mail
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  Email
                 </label>
                 <Input
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder="usuario@exemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                   required
-                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                <label className="block text-sm font-medium text-gray-200 mb-1">
                   Senha
                 </label>
                 <Input
@@ -88,14 +88,15 @@ const LoginRegisterScreen = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                   required
-                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-300 border-2 border-zinc-900 text-zinc-900 hover:bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className="w-full bg-gray-600 hover:bg-gray-500 text-white"
               >
                 {loading ? "Aguarde..." : "Entrar"}
               </Button>
@@ -105,23 +106,24 @@ const LoginRegisterScreen = () => {
           <TabsContent value="signup">
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               {error && tab === "signup" && (
-                <p className="rounded-md bg-red-200 text-red-800 p-2">{error}</p>
+                <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
               )}
               <div>
-                <label className="block text-sm font-medium text-zinc-800 mb-1">
-                  E‑mail
+                <label className="block text-sm font-medium text-gray-200 mb-1">
+                  Email
                 </label>
                 <Input
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder="usuario@exemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                   required
-                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                <label className="block text-sm font-medium text-gray-200 mb-1">
                   Senha
                 </label>
                 <Input
@@ -129,16 +131,17 @@ const LoginRegisterScreen = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                   required
-                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                  className="bg-gray-700 border-gray-600 focus:border-gray-500"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-300 border-2 border-zinc-900 text-zinc-900 hover:bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+                className="w-full bg-gray-600 hover:bg-gray-500 text-white"
               >
-                {loading ? "Aguarde..." : "Criar Conta"}
+                {loading ? "Aguarde..." : "Cadastrar"}
               </Button>
             </form>
           </TabsContent>

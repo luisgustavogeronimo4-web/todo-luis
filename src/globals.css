@@ -4,6 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-zinc-950 text-zinc-50 antialiased;
+    background-color: #09090b;
+    color: #fafafa;
   }
 }
