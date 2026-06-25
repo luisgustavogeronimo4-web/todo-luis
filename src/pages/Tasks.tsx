@@ -4,11 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskItem } from "@/components/TaskItem";
@@ -31,11 +31,11 @@ export const Tasks = () => {
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmDescription, setConfirmDescription] = useState("");
 
-  // edit modal state
+  // edit modal
   const [editOpen, setEditOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
-  // key to force TaskForm reset after a successful create
+  // key to reset TaskForm after successful create
   const [formKey, setFormKey] = useState(0);
 
   const loadTasks = async () => {
@@ -46,13 +46,13 @@ export const Tasks = () => {
       ]);
       setActiveTasks(active);
       setTrashTasks(deleted);
-    } catch (error: any) {
-      console.error("loadTasks error:", error.message);
+    } catch (err: any) {
+      console.error("loadTasks error:", err.message);
       toast.error("Failed to load tasks");
     }
   };
 
-  // reload when auth state changes (login/logout)
+  // reload when auth changes
   useEffect(() => {
     if (user?.id) loadTasks();
   }, [user?.id]);
@@ -61,12 +61,10 @@ export const Tasks = () => {
     setIsCreating(true);
     try {
       const created = await taskService.create(task);
-      // prepend newly created task only if it exists and is not completed
       if (created && !created.completed) {
         setActiveTasks((prev) => [created, ...prev]);
       }
-      toast.success("Task created successfully");
-      // reset form fields by changing key
+      toast.success("Task created");
       setFormKey((k) => k + 1);
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create task");
@@ -83,7 +81,7 @@ export const Tasks = () => {
       );
       toast.success("Task status updated");
     } catch {
-      toast.error("Failed to update task status");
+      toast.error("Failed to update task");
     }
   };
 
@@ -115,7 +113,7 @@ export const Tasks = () => {
       setActiveTasks((prev) =>
         prev.map((t) => (t.id === updated.id ? updated : t)),
       );
-      toast.success("Task updated successfully");
+      toast.success("Task updated");
     } catch (err: any) {
       toast.error(err.message ?? "Failed to update task");
     } finally {
@@ -128,7 +126,7 @@ export const Tasks = () => {
   const handleDelete = (id: string) => {
     openConfirm(
       "Mover para lixeira",
-      "Tem certeza que deseja mover esta tarefa para a lixeira?",
+      "Deseja mover esta tarefa para a lixeira?",
       async () => {
         try {
           const ok = await taskService.softDelete(id);
@@ -138,10 +136,10 @@ export const Tasks = () => {
             setTrashTasks(trash);
             toast.success("Task moved to trash");
           } else {
-            toast.error("Failed to move task to trash");
+            toast.error("Failed to move task");
           }
         } catch {
-          toast.error("Failed to move task to trash");
+          toast.error("Failed to move task");
         }
       },
     );
@@ -150,16 +148,16 @@ export const Tasks = () => {
   const handleRestore = (id: string) => {
     openConfirm(
       "Restaurar tarefa",
-      "Deseja realmente restaurar esta tarefa?",
+      "Deseja restaurar esta tarefa?",
       async () => {
         try {
           const ok = await taskService.restore(id);
           if (ok) {
-            const restored = await taskService.getActive();
-            setActiveTasks(restored);
+            const active = await taskService.getActive();
+            setActiveTasks(active);
             const trash = await taskService.getDeleted();
             setTrashTasks(trash);
-            toast.success("Task restored successfully");
+            toast.success("Task restored");
           } else {
             toast.error("Failed to restore task");
           }
@@ -173,7 +171,7 @@ export const Tasks = () => {
   const handlePermanentDelete = (id: string) => {
     openConfirm(
       "Excluir permanentemente",
-      "Tem certeza que deseja excluir permanentemente esta tarefa?",
+      "Deseja excluir permanentemente esta tarefa?",
       async () => {
         try {
           const ok = await taskService.deletePermanently(id);
@@ -181,10 +179,10 @@ export const Tasks = () => {
             setTrashTasks((prev) => prev.filter((t) => t.id !== id));
             toast.success("Task permanently deleted");
           } else {
-            toast.error("Failed to permanently delete task");
+            toast.error("Failed to delete task");
           }
         } catch {
-          toast.error("Failed to permanently delete task");
+          toast.error("Failed to delete task");
         }
       },
     );
@@ -196,77 +194,81 @@ export const Tasks = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card>
+    <div className="min-h-screen w-full bg-zinc-950 text-zinc-50 p-6 flex flex-col items-center">
+      <div className="max-w-4xl w-full bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-xl space-y-6">
+        {/* Header */}
+        <Card className="bg-transparent border-none shadow-none">
           <CardHeader>
-            <CardTitle>Task Manager</CardTitle>
-            <CardDescription>
-              Manage your tasks with create, read, update, and delete operations.
+            <CardTitle className="text-2xl text-zinc-100">Task Manager</CardTitle>
+            <CardDescription className="text-zinc-400">
+              Gerencie suas tarefas com criação, edição e exclusão.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-6">
-              <TaskForm key={formKey} onSubmit={handleCreate} isSubmitting={isCreating} />
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Active tasks */}
-              <section className="md:w-1/2">
-                <h2 className="text-lg font-medium mb-4">Active Tasks</h2>
-                {activeTasks.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">
-                    No tasks yet. Create your first task above!
-                  </p>
-                ) : (
-                  activeTasks
-                    .filter((t) => t && t.id)
-                    .map((task) => (
-                      <TaskItem
-                        key={task.id}
-                        task={task}
-                        onEdit={handleUpdate}
-                        onDelete={handleDelete}
-                        onToggleComplete={handleToggleComplete}
-                      />
-                    ))
-                )}
-              </section>
-
-              {/* Trash */}
-              <section className="md:w-1/2">
-                <h2 className="text-lg font-medium mb-4">Trash</h2>
-                {trashTasks.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">Trash is empty.</p>
-                ) : (
-                  trashTasks
-                    .filter((t) => t && t.id)
-                    .map((task) => (
-                      <TaskItem
-                        key={task.id}
-                        task={task}
-                        onRestore={handleRestore}
-                        onDeletePermanently={handlePermanentDelete}
-                        onToggleComplete={handleToggleComplete}
-                      />
-                    ))
-                )}
-              </section>
-            </div>
+            <TaskForm
+              key={formKey}
+              onSubmit={handleCreate}
+              isSubmitting={isCreating}
+            />
           </CardContent>
-
-          <CardFooter className="flex justify-between">
-            <Link to="/">
-              <Button variant="outline">Back to Home</Button>
-            </Link>
-            <Button variant="ghost" onClick={handleLogout}>
-              Logout
-            </Button>
-          </CardFooter>
         </Card>
+
+        {/* Active tasks */}
+        <section>
+          <h2 className="text-lg font-medium text-zinc-200 mb-4">Tarefas Ativas</h2>
+          {activeTasks.length === 0 ? (
+            <p className="text-center text-zinc-400 py-8">
+              Nenhuma tarefa ainda. Crie sua primeira tarefa acima!
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {activeTasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onEdit={handleUpdate}
+                  onDelete={handleDelete}
+                  onToggleComplete={handleToggleComplete}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Trash */}
+        <section>
+          <h2 className="text-lg font-medium text-zinc-200 mb-4">Lixeira</h2>
+          {trashTasks.length === 0 ? (
+            <p className="text-center text-zinc-400 py-8">Lixeira vazia.</p>
+          ) : (
+            <div className="space-y-3">
+              {trashTasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onRestore={handleRestore}
+                  onDeletePermanently={handlePermanentDelete}
+                  onToggleComplete={handleToggleComplete}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Footer actions */}
+        <CardFooter className="flex justify-between">
+          <Link to="/">
+            <Button variant="outline" className="bg-zinc-800 hover:bg-zinc-700">
+              Voltar ao início
+            </Button>
+          </Link>
+          <Button variant="ghost" onClick={handleLogout}>
+            Sair
+          </Button>
+        </CardFooter>
       </div>
 
-      {/* Confirmation modal */}
+      {/* Modals */}
       <ConfirmModal
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
@@ -278,7 +280,6 @@ export const Tasks = () => {
         variant="default"
       />
 
-      {/* Edit task modal */}
       <TaskModal
         open={editOpen}
         onOpenChange={setEditOpen}
@@ -288,7 +289,7 @@ export const Tasks = () => {
         }
         isSubmitting={isUpdating !== null}
       />
-    </main>
+    </div>
   );
 };
 
