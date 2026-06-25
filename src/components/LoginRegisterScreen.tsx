@@ -31,114 +31,118 @@ const LoginRegisterScreen = () => {
   };
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
-      {/* Left panel – identidade visual */}
-      <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-zinc-950 via-slate-900 to-blue-950 text-center p-8">
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-5xl font-extrabold text-white">DL</span>
-          <Star className="h-8 w-8 text-blue-400 fill-blue-400" />
+    <div className="min-h-screen flex items-center justify-center bg-amber-50 p-4">
+      <div className="w-full max-w-md mx-auto space-y-6 bg-amber-100 border-2 border-zinc-900 p-6">
+        {/* Header com ícone retro */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-4xl font-bold text-zinc-900">DL</span>
+          <Star className="h-6 w-6 text-zinc-900 fill-zinc-900" />
         </div>
-        <h1 className="text-4xl font-bold text-white mb-4">TO DO DO Luís</h1>
-        <p className="text-lg text-zinc-200">
+        <h1 className="text-center text-2xl font-extrabold text-zinc-900 mb-2">
+          TO DO DO Luís
+        </h1>
+        <p className="text-center text-sm text-zinc-800 mb-6">
           Organize suas tarefas, domine sua rotina e alcance o pico da sua produtividade.
         </p>
-      </div>
 
-      {/* Right panel – formulário */}
-      <div className="flex items-center justify-center bg-zinc-950 p-8">
-        <div className="w-full max-w-md space-y-6">
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 gap-2 bg-zinc-800 rounded-full p-1">
-              <TabsTrigger
-                value="login"
-                className="rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
+          <TabsList className="grid w-full grid-cols-2 gap-2 bg-amber-200 border-2 border-zinc-900 rounded-md p-1">
+            <TabsTrigger
+              value="login"
+              className="rounded-md data-[state=active]:bg-amber-400 data-[state=active]:text-zinc-900 transition-colors"
+            >
+              Entrar
+            </TabsTrigger>
+            <TabsTrigger
+              value="signup"
+              className="rounded-md data-[state=active]:bg-amber-400 data-[state=active]:text-zinc-900 transition-colors"
+            >
+              Criar Conta
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login">
+            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+              {error && tab === "login" && (
+                <p className="rounded-md bg-red-200 text-red-800 p-2">{error}</p>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                  E‑mail
+                </label>
+                <Input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                  Senha
+                </label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-amber-300 border-2 border-zinc-900 text-zinc-900 hover:bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
               >
-                Entrar
-              </TabsTrigger>
-              <TabsTrigger
-                value="signup"
-                className="rounded-full data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+                {loading ? "Aguarde..." : "Entrar"}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="signup">
+            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+              {error && tab === "signup" && (
+                <p className="rounded-md bg-red-200 text-red-800 p-2">{error}</p>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                  E‑mail
+                </label>
+                <Input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-800 mb-1">
+                  Senha
+                </label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-amber-200 border-2 border-zinc-900 focus:border-zinc-900 rounded-md"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-amber-300 border-2 border-zinc-900 text-zinc-900 hover:bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
               >
-                Criar Conta
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && tab === "login" && (
-                  <p className="rounded-md bg-destructive/10 p-2 text-destructive">{error}</p>
-                )}
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">E‑mail</label>
-                  <Input
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">Senha</label>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                >
-                  {loading ? "Aguarde..." : "Entrar"}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && tab === "signup" && (
-                  <p className="rounded-md bg-destructive/10 p-2 text-destructive">{error}</p>
-                )}
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">E‑mail</label>
-                  <Input
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-500 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">Senha</label>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="bg-zinc-800 border-zinc-700 focus:border-blue-5
-                    00 rounded-md"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                >
-                  {loading ? "Aguarde..." : "Criar Conta"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </div>
+                {loading ? "Aguarde..." : "Criar Conta"}
+              </Button>
+            </form>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
