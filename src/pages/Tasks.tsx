@@ -61,21 +61,20 @@ export const Tasks = () => {
 
   const filteredAndSortedTasks = useMemo(() => {
     let tasks = [...activeTasks];
-    if (filterBy === "completed") tasks = tasks.filter(t => t.completed);
-    else if (filterBy === "pending") tasks = tasks.filter(t => !t.completed);
+    if (filterBy === "completed") tasks = tasks.filter((t) => t.completed);
+    else if (filterBy === "pending") tasks = tasks.filter((t) => !t.completed);
     tasks.sort((a, b) => {
       let comparison = 0;
-      if (sortBy === "created") comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      if (sortBy === "created")
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
       else if (sortBy === "due") {
         if (!a.due_date && !b.due_date) comparison = 0;
         else if (!a.due_date) comparison = 1;
         else if (!b.due_date) comparison = -1;
         else comparison = new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
       } else if (sortBy === "priority") {
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
-        const aPriority = priorityOrder[a.priority || "medium"];
-        const bPriority = priorityOrder[b.priority || "medium"];
-        comparison = aPriority - bPriority;
+        const order = { high: 3, medium: 2, low: 1 };
+        comparison = (order[a.priority || "medium"] ?? 2) - (order[b.priority || "medium"] ?? 2);
       }
       return sortOrder === "asc" ? comparison : -comparison;
     });
@@ -99,7 +98,9 @@ export const Tasks = () => {
   const handleToggleComplete = async (task: Task) => {
     try {
       await taskService.update(task.id, { completed: !task.completed });
-      setActiveTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)));
+      setActiveTasks((prev) =>
+        prev.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t))
+      );
       toast.success("Task status updated");
     } catch {
       toast.error("Failed to update task");
@@ -140,68 +141,56 @@ export const Tasks = () => {
   };
 
   const handleDelete = (id: string) => {
-    openConfirm(
-      "Mover para lixeira",
-      "Deseja mover esta tarefa para a lixeira?",
-      async () => {
-        try {
-          const ok = await taskService.softDelete(id);
-          if (ok) {
-            setActiveTasks((prev) => prev.filter((t) => t.id !== id));
-            const trash = await taskService.getDeleted();
-            setTrashTasks(trash);
-            toast.success("Task moved to trash");
-          } else {
-            toast.error("Failed to move task");
-          }
-        } catch {
+    openConfirm("Mover para lixeira", "Deseja mover esta tarefa para a lixeira?", async () => {
+      try {
+        const ok = await taskService.softDelete(id);
+        if (ok) {
+          setActiveTasks((prev) => prev.filter((t) => t.id !== id));
+          const trash = await taskService.getDeleted();
+          setTrashTasks(trash);
+          toast.success("Task moved to trash");
+        } else {
           toast.error("Failed to move task");
         }
-      },
-    );
+      } catch {
+        toast.error("Failed to move task");
+      }
+    });
   };
 
   const handleRestore = (id: string) => {
-    openConfirm(
-      "Restaurar tarefa",
-      "Deseja restaurar esta tarefa?",
-      async () => {
-        try {
-          const ok = await taskService.restore(id);
-          if (ok) {
-            const active = await taskService.getActive();
-            setActiveTasks(active);
-            const trash = await taskService.getDeleted();
-            setTrashTasks(trash);
-            toast.success("Task restored");
-          } else {
-            toast.error("Failed to restore task");
-          }
-        } catch {
+    openConfirm("Restaurar tarefa", "Deseja restaurar esta tarefa?", async () => {
+      try {
+        const ok = await taskService.restore(id);
+        if (ok) {
+          const active = await taskService.getActive();
+          setActiveTasks(active);
+          const trash = await taskService.getDeleted();
+          setTrashTasks(trash);
+          toast.success("Task restored");
+        } else {
           toast.error("Failed to restore task");
         }
-      },
-    );
+      } catch {
+        toast.error("Failed to restore task");
+      }
+    });
   };
 
   const handlePermanentDelete = (id: string) => {
-    openConfirm(
-      "Excluir permanentemente",
-      "Deseja excluir permanentemente esta tarefa?",
-      async () => {
-        try {
-          const ok = await taskService.deletePermanently(id);
-          if (ok) {
-            setTrashTasks((prev) => prev.filter((t) => t.id !== id));
-            toast.success("Task permanently deleted");
-          } else {
-            toast.error("Failed to delete task");
-          }
-        } catch {
+    openConfirm("Excluir permanentemente", "Deseja excluir permanentemente esta tarefa?", async () => {
+      try {
+        const ok = await taskService.deletePermanently(id);
+        if (ok) {
+          setTrashTasks((prev) => prev.filter((t) => t.id !== id));
+          toast.success("Task permanently deleted");
+        } else {
           toast.error("Failed to delete task");
         }
-      },
-    );
+      } catch {
+        toast.error("Failed to delete task");
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -212,12 +201,14 @@ export const Tasks = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-zinc-50 text-zinc-900 p-6">
-        <div className="max-w-4xl w-full bg-zinc-900 border border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] p-6">
+      <div className="min-h-screen bg-pattern text-zinc-900 p-6">
+        <div className="max-w-4xl w-full bg-zinc-900 border-4 border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] p-6">
           <Card className="bg-white border-red-600 -rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <CardHeader>
-              <CardTitle className="text-2xl text-red-600">Task Manager</CardTitle>
-              <CardDescription className="text-red-600">Gerencie suas tarefas com estilo Acid Punk</CardDescription>
+              <CardTitle className="text-2xl text-red-600 -rotate-1">Task Manager</CardTitle>
+              <CardDescription className="text-red-600 -rotate-2">
+                Gerencie suas tarefas com estilo Acid Punk
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <TaskForm key={formKey} onSubmit={handleCreate} isSubmitting={isCreating} />
@@ -235,9 +226,11 @@ export const Tasks = () => {
           </div>
 
           <section className="border-red-600 -rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="text-lg font-medium text-red-600 mb-2">Tarefas Ativas</h2>
+            <h2 className="text-lg font-medium text-red-600 mb-2 -rotate-1">Tarefas Ativas</h2>
             {filteredAndSortedTasks.length === 0 ? (
-              <p className="text-center text-red-600 py-8">Nenhuma tarefa ativa encontrada. Crie sua primeira tarefa acima!</p>
+              <p className="text-center text-red-600 py-8">
+                Nenhuma tarefa ativa encontrada. Crie sua primeira tarefa acima!
+              </p>
             ) : (
               <div className="space-y-3">
                 {filteredAndSortedTasks.map((task) => (
@@ -253,8 +246,8 @@ export const Tasks = () => {
             )}
           </section>
 
-          <section className="border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="text-lg font-medium text-red-600 mb-2">Lixeira</h2>
+          <section className="border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-8">
+            <h2 className="text-lg font-medium text-red-600 mb-2 -rotate-1">Lixeira</h2>
             {trashTasks.length === 0 ? (
               <p className="text-center text-red-600 py-8">Lixeira vazia.</p>
             ) : (
@@ -272,9 +265,11 @@ export const Tasks = () => {
             )}
           </section>
 
-          <CardFooter className="flex justify-between border-red-600 -rotate-2">
+          <CardFooter className="flex justify-between border-red-600 -rotate-2 mt-6">
             <Link to="/" className="text-sm">
-              <Button variant="outline" className="bg-red-600 hover:bg-red-700">Voltar ao início</Button>
+              <Button variant="outline" className="bg-red-600 hover:bg-red-700 text-white">
+                Voltar ao início
+              </Button>
             </Link>
             <Button variant="ghost" onClick={handleLogout} className="border-red-600">
               Sair
@@ -297,7 +292,9 @@ export const Tasks = () => {
           open={editOpen}
           onOpenChange={setEditOpen}
           onSubmit={submitEdit}
-          initialData={editTask ? { title: editTask.title, description: editTask.description } : undefined}
+          initialData={
+            editTask ? { title: editTask.title, description: editTask.description } : undefined
+          }
           isSubmitting={isUpdating !== null}
         />
       </div>

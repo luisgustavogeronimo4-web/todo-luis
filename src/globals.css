@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    background-color: #09090b;
-    color: #fafafa;
+@layer utilities {
+  .bg-pattern {
+    background-image: repeating-linear-gradient(
+      45deg,
+      #000000,
+      #000000 2px,
+      #ffffff 2px,
+      #ffffff 4px
+    );
   }
 }

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
-import { Edit, Trash2, RotateCcw, Trash } from "lucide-react";
+import { Edit, Trash2, RotateCcw, Trash, Star } from "lucide-react";
 import type { Task } from "@/types/Task";
 
 interface TaskItemProps {
@@ -16,9 +16,7 @@ interface TaskItemProps {
 }
 
 /**
- * The Supabase table uses `completed` (boolean) and `deleted_at` (timestamp|null).
- * The original code referenced `is_completed` / `is_deleted`, which caused runtime errors.
- * We now read the correct fields and guard against null task objects.
+ * Adjusted to use correct Supabase fields and add Persona‑5 visual flair.
  */
 export const TaskItem = ({
   task,
@@ -34,7 +32,12 @@ export const TaskItem = ({
   const isCompleted = !!task.completed;
 
   return (
-    <Card className="p-4 mb-3">
+    <Card className="p-4 mb-3 relative border-4 border-red-600 -rotate-1 shadow-[4px_4px_0px_0px_rgba(211,18,18,1)]">
+      {/* Star overlay in top‑right corner */}
+      <div className="absolute top-2 right-2 opacity-20">
+        <Star className="h-6 w-6 text-yellow-400" />
+      </div>
+
       <div className="flex items-start gap-3">
         <Checkbox
           checked={isCompleted}
@@ -60,9 +63,7 @@ export const TaskItem = ({
             </p>
           )}
           {task.priority && (
-            <p className="text-sm text-gray-600 mt-1">
-              Priority: {task.priority}
-            </p>
+            <p className="text-sm text-gray-600 mt-1">Priority: {task.priority}</p>
           )}
         </div>
         <div className="flex gap-1">

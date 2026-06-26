@@ -9,6 +9,7 @@ import { Home } from "./pages/Home";
 import { Tasks } from "./pages/Tasks";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +21,6 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* rota de login/auth agora é '/login' */}
             <Route path="/login" element={<Auth />} />
             <Route
               path="/"
@@ -35,6 +35,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Tasks />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
