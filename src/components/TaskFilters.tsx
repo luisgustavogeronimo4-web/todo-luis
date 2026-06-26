@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, SortAsc, SortDesc } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface TaskFiltersProps {
   sortBy: "created" | "due" | "priority";
@@ -20,26 +21,34 @@ export const TaskFilters = ({
   onFilterChange,
 }: TaskFiltersProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-3 p-4 bg-zinc-800 rounded-lg">
-      <div className="flex items-center gap-2">
-        <Filter className="h-4 w-4 text-zinc-400" />
+    <div className="relative flex flex-col sm:flex-row gap-3 p-4 bg-zinc-900 border-4 border-red-600 -rotate-1 shadow-[4px_4px_0px_0px_rgba(211,18,18,1)]">
+      {/* Star accents */}
+      <div className="absolute top-2 left-2 opacity-10 pointer-events-none">
+        <Star className="h-4 w-4 text-red-600" />
+      </div>
+      <div className="absolute bottom-2 right-2 opacity-10 pointer-events-none">
+        <Star className="h-4 w-4 text-white" />
+      </div>
+      
+      <div className="relative z-10 flex items-center gap-2 rotate-1">
+        <Filter className="h-4 w-4 text-red-600" />
         <Select value={filterBy} onValueChange={(v) => onFilterChange(v as any)}>
-          <SelectTrigger className="w-40 bg-zinc-700 border-zinc-600">
+          <SelectTrigger className="w-40 bg-zinc-800 border-2 border-red-600 text-white -rotate-1">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Tasks</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
+          <SelectContent className="bg-zinc-900 border-red-600">
+            <SelectItem value="all" className="text-white">All Tasks</SelectItem>
+            <SelectItem value="pending" className="text-white">Pending</SelectItem>
+            <SelectItem value="completed" className="text-white">Completed</SelectItem>
           </SelectContent>
         </Select>
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="relative z-10 flex items-center gap-2 rotate-1">
         {sortOrder === "asc" ? (
-          <SortAsc className="h-4 w-4 text-zinc-400" />
+          <SortAsc className="h-4 w-4 text-red-600" />
         ) : (
-          <SortDesc className="h-4 w-4 text-zinc-400" />
+          <SortDesc className="h-4 w-4 text-red-600" />
         )}
         <Select 
           value={`${sortBy}-${sortOrder}`} 
@@ -48,16 +57,16 @@ export const TaskFilters = ({
             onSortChange(newSortBy, newSortOrder);
           }}
         >
-          <SelectTrigger className="w-48 bg-zinc-700 border-zinc-600">
+          <SelectTrigger className="w-48 bg-zinc-800 border-2 border-red-600 text-white -rotate-1">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created-asc">Created (Oldest)</SelectItem>
-            <SelectItem value="created-desc">Created (Newest)</SelectItem>
-            <SelectItem value="due-asc">Due Date (Soonest)</SelectItem>
-            <SelectItem value="due-desc">Due Date (Latest)</SelectItem>
-            <SelectItem value="priority-asc">Priority (Low-High)</SelectItem>
-            <SelectItem value="priority-desc">Priority (High-Low)</SelectItem>
+          <SelectContent className="bg-zinc-900 border-red-600">
+            <SelectItem value="created-asc" className="text-white">Created (Oldest)</SelectItem>
+            <SelectItem value="created-desc" className="text-white">Created (Newest)</SelectItem>
+            <SelectItem value="due-asc" className="text-white">Due Date (Soonest)</SelectItem>
+            <SelectItem value="due-desc" className="text-white">Due Date (Latest)</SelectItem>
+            <SelectItem value="priority-asc" className="text-white">Priority (Low-High)</SelectItem>
+            <SelectItem value="priority-desc" className="text-white">Priority (High-Low)</SelectItem>
           </SelectContent>
         </Select>
       </div>
