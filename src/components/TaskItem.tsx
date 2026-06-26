@@ -8,15 +8,10 @@ import type { Task } from "@/types/Task";
 
 interface TaskItemProps {
   task: Task;
-  /** Edit a task (active only) */
   onEdit?: (task: Task) => void;
-  /** Soft‑delete (move to trash) */
   onDelete?: (taskId: string) => void;
-  /** Restore from trash */
   onRestore?: (taskId: string) => void;
-  /** Hard‑delete permanently */
   onDeletePermanently?: (taskId: string) => void;
-  /** Toggle completed flag */
   onToggleComplete?: (task: Task) => void;
 }
 
@@ -59,6 +54,16 @@ export const TaskItem = ({
           <p className="text-xs text-gray-400 mt-1">
             Created: {new Date(task.created_at).toLocaleDateString()}
           </p>
+          {task.due_date && (
+            <p className="text-sm text-gray-600 mt-1">
+              Due: {new Date(task.due_date).toLocaleDateString()}
+            </p>
+          )}
+          {task.priority && (
+            <p className="text-sm text-gray-600 mt-1">
+              Priority: {task.priority}
+            </p>
+          )}
         </div>
         <div className="flex gap-1">
           {isDeleted ? (

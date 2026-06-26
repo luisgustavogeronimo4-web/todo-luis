@@ -7,4 +7,6 @@ export type Task = {
   is_deleted: boolean;
   is_completed: boolean;
   user_id: string;
+  due_date?: string; // New field
+  priority?: "low" | "medium" | "high"; // New field
 };
