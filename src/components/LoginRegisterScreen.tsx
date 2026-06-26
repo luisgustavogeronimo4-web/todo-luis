@@ -77,14 +77,22 @@ export const LoginRegisterScreen = () => {
               <TabsTrigger
                 value="login"
                 onValueChange={setActiveTab}
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "login" ? "text-white bg-red-800" : "text-white/50 hover:text-white"} transition-colors`}
+                className={`px-4 py-2 text-sm font-medium ${
+                  activeTab === "login"
+                    ? "text-white bg-red-800"
+                    : "text-white/50 hover:text-white"
+                } transition-colors`}
               >
                 Login
               </TabsTrigger>
               <TabsTrigger
                 value="register"
                 onValueChange={setActiveTab}
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "register" ? "text-white bg-red-800" : "text-white/50 hover:text-white"} transition-colors`}
+                className={`px-4 py-2 text-sm font-medium ${
+                  activeTab === "register"
+                    ? "text-white bg-red-800"
+                    : "text-white/50 hover:text-white"
+                } transition-colors`}
               >
                 Register
               </TabsTrigger>
@@ -117,7 +125,9 @@ export const LoginRegisterScreen = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${loading ? "opacity-50" : ""}`}
+                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${
+                    loading ? "opacity-50" : ""
+                  }`}
                 >
                   {loading ? "Logging in..." : "Login"}
                 </Button>
@@ -151,7 +161,9 @@ export const LoginRegisterScreen = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${loading ? "opacity-50" : ""}`}
+                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${
+                    loading ? "opacity-50" : ""
+                  }`}
                 >
                   {loading ? "Signing up..." : "Sign Up"}
                 </Button>
@@ -163,3 +175,5 @@ export const LoginRegisterScreen = () => {
     </div>
   );
 };
+
+export default LoginRegisterScreen;
