@@ -16,7 +16,11 @@ interface TaskFormProps {
   isSubmitting?: boolean;
 }
 
-export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps) => {
+export const TaskForm = ({
+  onSubmit,
+  initialData,
+  isSubmitting,
+}: TaskFormProps) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [dueDate, setDueDate] = useState(initialData?.due_date || "");
@@ -25,11 +29,11 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onSubmit({ 
-      title: title.trim(), 
-      description: description.trim(), 
-      due_date: dueDate, 
-      priority: priority 
+    onSubmit({
+      title: title.trim(),
+      description: description.trim(),
+      due_date: dueDate,
+      priority: priority,
     });
   };
 
@@ -42,9 +46,12 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
       <div className="absolute top-2 right-2 opacity-10 pointer-events-none">
         <Star className="h-5 w-5 text-white" />
       </div>
-      
-      <form onSubmit={handleSubmit} className="relative z-10 space-y-4 -rotate-1">
-        <div className="className="-rotate-1">
+
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 space-y-4 -rotate-1"
+      >
+        <div>
           <Input
             placeholder="Task title"
             value={title}
@@ -53,7 +60,8 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
             className="w-full bg-zinc-800 border-2 border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0 -rotate-1"
           />
         </div>
-        <div className="-rotate-1">
+
+        <div>
           <Textarea
             placeholder="Task description (optional)"
             value={description}
@@ -63,6 +71,7 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
             className="w-full bg-zinc-800 border-2 border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0 -rotate-1"
           />
         </div>
+
         <div className="flex items-center mb-2 -rotate-1">
           <label className="mr-2 text-white font-bold">Due Date:</label>
           <Input
@@ -73,11 +82,14 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
             className="w-full bg-zinc-800 border-2 border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0"
           />
         </div>
+
         <div className="flex items-center mb-2 -rotate-1">
           <label className="mr-2 text-white font-bold">Priority:</label>
           <select
             value={priority}
-            onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+            onChange={(e) =>
+              setPriority(e.target.value as "low" | "medium" | "high")
+            }
             disabled={isSubmitting}
             className="w-full bg-zinc-800 border-2 border-red-600 text-white focus:border-red-400 focus:ring-0"
           >
@@ -86,7 +98,12 @@ export const TaskForm = ({ onSubmit, initialData, isSubmitting }: TaskFormProps)
             <option value="high">High</option>
           </select>
         </div>
-        <Button type="submit" disabled={isSubmitting || !title.trim()} className="w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors">
+
+        <Button
+          type="submit"
+          disabled={isSubmitting || !title.trim()}
+          className="w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors"
+        >
           {isSubmitting ? "Saving..." : "Save Task"}
         </Button>
       </form>
