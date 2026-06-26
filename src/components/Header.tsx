@@ -2,12 +2,14 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/context/AuthContext";
-import { Home as HomeIcon, ListTodo as TasksIcon, LogOut, Star } from "lucide-react";
+import { Home as HomeIcon, ListTodo as TasksIcon, LogOut, Sun, Moon, Star } from "lucide-react";
 
 export const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { setTheme, theme } = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -49,6 +51,15 @@ export const Header = () => {
           >
             <LogOut className="h-4 w-4 mr-1" />
             Sair
+          </Button>
+          {/* Theme toggle button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="border-2 border-white text-white hover:bg-white hover:text-red-600 rotate-1"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
         </div>
       </div>
