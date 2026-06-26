@@ -1,155 +1,159 @@
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
 import { Star } from "lucide-react";
 
-const LoginRegisterScreen = () => {
-  const { login, signup: register } = useAuth();
-  const [tab, setTab] = useState<"login" | "signup">("login");
+export const LoginRegisterScreen = () => {
+  const { login, signup } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("login");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
     try {
-      if (tab === "login") {
-        await login(email, password);
-      } else {
-        await register(email, password);
-      }
+      await login(email, password);
+      navigate("/", { replace: true });
     } catch (err: any) {
-      setError(err?.message ?? "Falha ao autenticar");
+      alert(err.message ?? "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await signup(email, password);
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      alert(err.message ?? "Sign up failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fafafa] p-4">
-      {/* Main container with thick red border and hard shadow */}
-      <div className="relative w-full max-w-md bg-white border-4 border-red-600 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] rotate-2 skew-x-3">
-        {/* Decorative overlay for extra geometric cut‑out */}
-        <div className="absolute inset-0 pointer-events-none border-4 border-red-600 -rotate-3 skew-y-3" />
-        <div className="relative p-8 space-y-6">
-          {/* Header with stylized title */}
-          <div className="flex flex-col items-center gap-2 mb-4">
-            <span className="text-4xl font-black text-red-600">DL</span>
-            <Star className="h-6 w-6 text-red-600 fill-red-600" />
-          </div>
-          <h1 className="text-center text-3xl font-black tracking-tighter uppercase text-red-600">
-            Gerenciador de Tarefas
-          </h1>
-          <p className="text-center text-red-800/80">
-            Acesse sua conta ou crie uma nova.
-          </p>
+    <div className="min-h-screen bg-pattern flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-zinc-900 border-4 border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] p-6">
+        {/* Chaotic title with mixed sizes and rotations */}
+        <div className="mb-6 text-center">
+          <span className="block text-3xl font-black text-red-600 -rotate-1">T</span>
+          <span className="block text-2xl font-light text-white -rotate-2">O</span>
+          <span className="block text-xl font-bold text-red-600 -rotate-1">D</span>
+          <span className="block text-3xl font-black text-white -rotate-2">O</span>
+          <span className="block text-2xl font-light text-red-600 -rotate-1">L</span>
+          <span className="block text-xs font-bold text-white -rotate-2">U</span>
+          <span className="block text-lg font-black text-red-600 -rotate-1">I</span>
+          <span className="block text-2xl font-light text-white -rotate-2">S</span>
+        </div>
 
-          {/* Diagonal ribbon‑style tabs */}
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "signup")}>
-            <TabsList className="grid w-full grid-cols-2 gap-2 bg-white border-4 border-red-600 -rotate-2">
+        {/* Star background accents */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-2 left-2 opacity-10">
+            <Star className="h-6 w-6 text-red-600" />
+          </div>
+          <div className="absolute bottom-2 right-2 opacity-10">
+            <Star className="h-6 w-6 text-red-600" />
+          </div>
+          <div className="absolute top-2 right-2 opacity-10">
+            <Star className="h-6 w-6 text-white" />
+          </div>
+          <div className="absolute bottom-2 left-2 opacity-10">
+            <Star className="h-6 w-6 text-white" />
+          </div>
+        </div>
+
+        <div className="relative z-10 space-y-4">
+          <Tabs defaultValue={activeTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-red-600 -rotate-1">
               <TabsTrigger
                 value="login"
-                className="bg-white text-red-600 border-4 border-red-600 rotate-1 hover:bg-red-600 hover:text-white"
+                onValueChange={setActiveTab}
+                className={`px-4 py-2 text-sm font-medium ${activeTab === "login" ? "text-white bg-red-800" : "text-white/50 hover:text-white"} transition-colors`}
               >
-                Entrar
+                Login
               </TabsTrigger>
               <TabsTrigger
-                value="signup"
-                className="bg-white text-red-600 border-4 border-red-600 -rotate-1 hover:bg-red-600 hover:text-white"
+                value="register"
+                onValueChange={setActiveTab}
+                className={`px-4 py-2 text-sm font-medium ${activeTab === "register" ? "text-white bg-red-800" : "text-white/50 hover:text-white"} transition-colors`}
               >
-                Cadastrar
+                Register
               </TabsTrigger>
             </TabsList>
 
-            {/* Login form */}
-            <TabsContent value="login">
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                {error && tab === "login" && (
-                  <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
-                )}
+            <TabsContent value="login" className="space-y-4 p-4 bg-zinc-900">
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-black text-red-600 tracking-wider uppercase">
-                    EmAiL
-                  </label>
+                  <label className="block text-sm font-bold text-red-600 mb-1">Email</label>
                   <Input
                     type="email"
-                    placeholder="usuario@exemplo.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
-                    required
-                    className="bg-white text-black border-4 border-red-600 -rotate-1 focus:border-red-600 focus:ring-0"
+                    className="w-full bg-zinc-800 border border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-black text-red-600 tracking-wider uppercase">
-                    sEnHa
-                  </label>
+                  <label className="block text-sm font-bold text-red-600 mb-1">Password</label>
                   <Input
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
-                    required
-                    className="bg-white text-black border-4 border-red-600 rotate-1 focus:border-red-600 focus:ring-0"
+                    className="w-full bg-zinc-800 border border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-red-600 text-white border-4 border-red-800 rotate-2 hover:bg-red-700 transition-all"
+                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${loading ? "opacity-50" : ""}`}
                 >
-                  {loading ? "Aguarde..." : "Entrar"}
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               </form>
             </TabsContent>
 
-            {/* Signup form */}
-            <TabsContent value="signup">
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                {error && tab === "signup" && (
-                  <p className="rounded-md bg-red-900 text-red-200 p-2">{error}</p>
-                )}
+            <TabsContent value="register" className="space-y-4 p-4 bg-zinc-900">
+              <form onSubmit={handleSignup} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-black text-red-600 tracking-wider uppercase">
-                    EmAiL
-                  </label>
+                  <label className="block text-sm font-bold text-red-600 mb-1">Email</label>
                   <Input
                     type="email"
-                    placeholder="usuario@exemplo.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
-                    required
-                    className="bg-white text-black border-4 border-red-600 rotate-2 focus:border-red-600 focus:ring-0"
+                    className="w-full bg-zinc-800 border border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-black text-red-600 tracking-wider uppercase">
-                    sEnHa
-                  </label>
+                  <label className="block text-sm font-bold text-red-600 mb-1">Password</label>
                   <Input
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
-                    required
-                    className="bg-white text-black border-4 border-red-600 -rotate-2 focus:border-red-600 focus:ring-0"
+                    className="w-full bg-zinc-800 border border-red-600 text-white placeholder-white/50 focus:border-red-400 focus:ring-0"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-red-600 text-white border-4 border-red-800 rotate-2 hover:bg-red-700 transition-all"
+                  className={`w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors ${loading ? "opacity-50" : ""}`}
                 >
-                  {loading ? "Aguarde..." : "Cadastrar"}
+                  {loading ? "Signing up..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
@@ -159,5 +163,3 @@ const LoginRegisterScreen = () => {
     </div>
   );
 };
-
-export default LoginRegisterScreen;
