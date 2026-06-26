@@ -38,11 +38,11 @@ export const Profile = () => {
             <span className="block text-3xl font-black text-white -rotate-2">F</span>
             <span className="block text-2xl font-light text-red-600 -rotate-1">I</span>
             <span className="block text-xs font-bold text-white -rotate-2">L</span>
-            <span className="block text-lg font-black text-red-600 -rotate-1>E</span>
+            <span className="block text-lg font-black text-red-600 -rotate-1">E</span>
           </div>
 
           {/* Star background accents */}
-          <div className="absolute inset-0 pointer-none">
+          <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-2 left-2 opacity-10">
               <Star className="h-6 w-6 text-red-600" />
             </div>
