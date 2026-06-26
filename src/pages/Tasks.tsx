@@ -20,6 +20,7 @@ import type { Task } from "@/types/Task";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Star } from "lucide-react";
 
 export const Tasks = () => {
   const { user, logout } = useAuth();
@@ -201,8 +202,19 @@ export const Tasks = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-pattern text-zinc-900 p-6">
-        <div className="max-w-4xl w-full bg-zinc-900 border-4 border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] p-6">
+      {/* Halftone background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:12px_12px] pointer-events-none z-0" />
+      {/* Stars */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <Star className="absolute top-4 left-4 w-8 h-8 fill-current text-white opacity-20 rotate-12" />
+        <Star className="absolute top-1/3 right-8 w-6 h-6 fill-current text-white opacity-20 -rotate-45" />
+        <Star className="absolute bottom-12 left-1/4 w-10 h-10 fill-current text-white opacity-20 rotate-6" />
+        <Star className="absolute bottom-4 right-4 w-5 h-5 fill-current text-white opacity-20 -rotate-12" />
+        <Star className="absolute top-1/2 left-1/2 w-12 h-12 fill-current text-white opacity-20 rotate-45" />
+      </div>
+
+      <div className="relative flex flex-col items-center justify-center min-h-screen w-full mx-auto max-w-md md:max-w-xl p-4">
+        <div className="w-full bg-zinc-900 border-4 border-black -rotate-1 shadow-[6px_6px_0px_0px_rgba(211,18,18,1)] p-6">
           <Card className="bg-white border-red-600 -rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <CardHeader>
               <CardTitle className="text-2xl text-red-600 -rotate-1">Task Manager</CardTitle>
@@ -215,7 +227,7 @@ export const Tasks = () => {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 mt-6">
             <TaskFilters
               sortBy={sortBy}
               sortOrder={sortOrder}
@@ -267,11 +279,18 @@ export const Tasks = () => {
 
           <CardFooter className="flex justify-between border-red-600 -rotate-2 mt-6">
             <Link to="/" className="text-sm">
-              <Button variant="outline" className="bg-red-600 hover:bg-red-700 text-white">
+              <Button
+                variant="outline"
+                className="bg-white border-4 border-black text-black font-black hover:bg-gray-100"
+              >
                 Voltar ao início
               </Button>
             </Link>
-            <Button variant="ghost" onClick={handleLogout} className="border-red-600">
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="border-4 border-black text-black font-black hover:bg-white"
+            >
               Sair
             </Button>
           </CardFooter>
