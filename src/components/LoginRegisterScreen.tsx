@@ -68,21 +68,22 @@ export const LoginRegisterScreen = () => {
             <span className="block text-2xl font-light text-white -rotate-2">S</span>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs - onValueChange removido para evitar o erro do React */}
           <Tabs
             value={activeTab}
-            onValueChange={setActiveTab}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 bg-red-600 -rotate-1">
               <TabsTrigger
                 value="login"
+                onClick={() => setActiveTab("login")}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors"
               >
                 Login
               </TabsTrigger>
               <TabsTrigger
                 value="register"
+                onClick={() => setActiveTab("register")}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors"
               >
                 Register
@@ -103,6 +104,7 @@ export const LoginRegisterScreen = () => {
                 <div>
                   <Input
                     placeholder="Senha"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
@@ -133,6 +135,7 @@ export const LoginRegisterScreen = () => {
                 <div>
                   <Input
                     placeholder="Senha"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
