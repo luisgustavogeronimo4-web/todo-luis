@@ -58,7 +58,11 @@ export const taskService = {
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .insert({ ...task, user_id: userId })
+      .insert({ 
+        ...task, 
+        user_id: userId,
+        completed: false // Ensure new tasks are not completed by default
+      })
       .select()
       .single();
 

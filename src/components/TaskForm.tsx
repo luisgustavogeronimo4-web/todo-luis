@@ -25,16 +25,42 @@ export const TaskForm = ({
   const [description, setDescription] = useState(initialData?.description || "");
   const [dueDate, setDueDate] = useState(initialData?.due_date || "");
   const [priority, setPriority] = useState(initialData?.priority || "medium");
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate due date is not in the past
+    if (dueDate) {
+      const selectedDate = new Date(dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        setError("Due date cannot be in the past");
+        return;
+      }
+    }
+    
+    setError(null);
+    
     if (!title.trim()) return;
     onSubmit({
       title: title.trim(),
       description: description.trim(),
-      due_date: dueDate,
+      due_date: dueDate || undefined,
       priority: priority,
     });
+  };
+
+  // Get priority color class
+  const getPriorityClass = (priority: "low" | "medium" | "high") => {
+    switch (priority) {
+      case "high": return "bg-red-500/20 text-red-400";
+      case "medium": return "bg-yellow-500/20 text-yellow-400";
+      case "low": return "bg-green-500/20 text-green-400";
+      default: return "bg-gray-500/20 text-gray-400";
+    }
   };
 
   return (
@@ -46,6 +72,12 @@ export const TaskForm = ({
       <div className="absolute top-2 right-2 opacity-10 pointer-events-none">
         <Star className="h-5 w-5 text-white" />
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-900 border-l-4 border-red-600 text-red-300 -rotate-1">
+          {error}
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -87,16 +119,23 @@ export const TaskForm = ({
           <label className="mr-2 text-white font-bold">Priority:</label>
           <select
             value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value as "low" | "medium" | "high")
-            }
+            onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
             disabled={isSubmitting}
             className="w-full bg-zinc-800 border-2 border-red-600 text-white focus:border-red-400 focus:ring-0"
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low" className="bg-green-500/20 text-green-400">Low</option>
+            <option value="medium" className="bg-yellow-500/20 text-yellow-400">Medium</option>
+            <option value="high" className="bg-red-500/20 text-red-400">High</option>
           </select>
+        </div>
+
+        <div className="flex items-center gap-2 -rotate-1">
+          <span className="text-xs text-white/60">
+            Priority colors: 
+            <span className="px-2 py-1 rounded text-xs font-medium">Low</span>
+            <span className="px-2 py-1 rounded text-xs font-medium ml-1">Medium</span>
+            <span className="px-2 py-1 rounded text-xs font-medium ml-1">High</span>
+          </span>
         </div>
 
         <Button
