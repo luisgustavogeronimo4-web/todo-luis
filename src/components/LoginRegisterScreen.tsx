@@ -41,21 +41,21 @@ export const LoginRegisterScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-zinc-900">
       {/* Decorative stars and shapes */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <Star className="absolute top-4 left-4 w-8 h-8 fill-current text-black opacity-20 rotate-12" />
-        <Star className="absolute top-1/3 right-8 w-6 h-6 fill-current text-black opacity-20 -rotate-45" />
-        <Star className="absolute bottom-12 left-1/4 w-10 h-10 fill-current text-black opacity-20 rotate-6" />
-        <Star className="absolute bottom-4 right-4 w-5 h-5 fill-current text-black opacity-20 -rotate-12" />
-        <Star className="absolute top-1/2 left-1/2 w-12 h-12 fill-current text-black opacity-20 rotate-45" />
+        <Star className="absolute top-4 left-4 w-8 h-8 fill-current text-white opacity-20 rotate-12" />
+        <Star className="absolute top-1/3 right-8 w-6 h-6 fill-current text-white opacity-20 -rotate-45" />
+        <Star className="absolute bottom-12 left-1/4 w-10 h-10 fill-current text-white opacity-20 rotate-6" />
+        <Star className="absolute bottom-4 right-4 w-5 h-5 fill-current text-white opacity-20 -rotate-12" />
+        <Star className="absolute top-1/2 left-1/2 w-12 h-12 fill-current text-white opacity-20 rotate-45" />
         {/* Additional geometric shapes */}
-        <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-red-500 opacity-30 -rotate-30 transform" />
-        <div className="absolute bottom-1/4 right-1/4 w-16 h-16 bg-red-500 opacity-30 -rotate-15 transform" />
+        <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-red-500 opacity-20 -rotate-30 transform" />
+        <div className="absolute bottom-1/4 right-1/4 w-16 h-16 bg-red-500 opacity-20 -rotate-15 transform" />
       </div>
 
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="w-full max-w-md bg-white border-4 border-black -rotate-1 shadow-md p-6">
+        <div className="w-full max-w-md bg-zinc-800 border-4 border-black -rotate-1 shadow-md p-6">
           {/* Chaotic title */}
           <div className="mb-6 text-center">
             <span className="block text-3xl font-bold text-red-600 -rotate-1">T</span>
@@ -112,7 +112,7 @@ export const LoginRegisterScreen = () => {
                   disabled={loading || !email.trim()}
                   className="w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors"
                 >
-                  {loading ? "Logging in..." : "Login"}
+                  {logging ? "Logging in..." : "Login"}
                 </Button>
               </form>
             </TabsContent>
