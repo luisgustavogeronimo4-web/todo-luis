@@ -120,7 +120,7 @@ export const Tasks = () => {
     setEditOpen(true);
   };
 
-  const submitEdit = async (data: Omit<Task, "id" | "created_at" | "updated_at">) => {
+  const submitEdit = async (data: { title: string; description?: string; due_date?: string; priority?: "low" | "medium" | "high" }) => {
     if (!editTask) return;
     const confirmed = window.confirm("Tem certeza que deseja salvar as alterações?");
     if (!confirmed) return;
@@ -312,7 +312,12 @@ export const Tasks = () => {
           onOpenChange={setEditOpen}
           onSubmit={submitEdit}
           initialData={
-            editTask ? { title: editTask.title, description: editTask.description } : undefined
+            editTask ? { 
+              title: editTask.title, 
+              description: editTask.description,
+              due_date: editTask.due_date,
+              priority: editTask.priority
+            } : undefined
           }
           isSubmitting={isUpdating !== null}
         />
