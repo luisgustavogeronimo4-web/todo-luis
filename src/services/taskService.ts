@@ -50,7 +50,6 @@ export const taskService = {
   ): Promise<Task> {
     const userId = await getCurrentUserId();
 
-    // Whitelist manual no create por garantia
     const { title, description, due_date, priority } = task;
 
     const { data, error } = await supabase
@@ -74,13 +73,12 @@ export const taskService = {
 
   async update(
     taskId: string,
-    updates: Partial<Omit<Task, "id" | "created_at" | "updated_at" | "user_id">>,
+    updates: Partial<Omit<Task, "id" | "created_at" | "updated_at" | "user_id" | "deleted_at">>,
   ): Promise<Task> {
     const userId = await getCurrentUserId();
 
-    // SOLUÇÃO DO ERRO HIGH: Destruturação explícita para criar um Whitelist limpo.
-    // Qualquer propriedade perigosa como 'user_id' enviada maliciosamente será ignorada aqui.
-    const { title, description, due_date, priority, completed, deleted_at } = updates;
+    // CORREÇÃO DO CRITICAL: Removido completamente o 'deleted_at' da lista de modificações permitidas.
+    const { title, description, due_date, priority, completed } = updates;
     
     const safeUpdates: Record<string, any> = {};
     if (title !== undefined) safeUpdates.title = title;
@@ -88,7 +86,6 @@ export const taskService = {
     if (due_date !== undefined) safeUpdates.due_date = due_date;
     if (priority !== undefined) safeUpdates.priority = priority;
     if (completed !== undefined) safeUpdates.completed = completed;
-    if (deleted_at !== undefined) safeUpdates.deleted_at = deleted_at;
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
