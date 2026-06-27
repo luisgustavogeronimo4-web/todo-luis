@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@/types/User";
-import { useNavigate } from "react-router-dom";
 
 type AuthContextValue = {
   user: User | null;
@@ -16,7 +15,6 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -62,7 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error(error);
     setUser(null);
-    navigate("/login", { replace: true });
   };
 
   return (
