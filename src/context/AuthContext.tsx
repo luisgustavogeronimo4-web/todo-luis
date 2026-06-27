@@ -19,10 +19,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
+      
+      // Removido o console.error bruto para evitar vazamento de logs confidenciais
       if (error) {
-        console.error("Auth getUser error:", error.message);
         return;
       }
+      
       if (data?.user) {
         const u: User = {
           id: data.user.id,
@@ -48,18 +50,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) throw new Error("Falha na autenticação.");
   };
 
   const signup = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+    if (error) throw new Error("Falha no cadastro.");
   };
 
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) console.error(error);
+    // Removido o console.error bruto
     setUser(null);
+    if (error) throw new Error("Erro ao encerrar sessão.");
   };
 
   return (
