@@ -240,16 +240,19 @@ export const Tasks = () => {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-6 mt-6">
-            <TaskFilters
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              onSortChange={setSortBy}
-              filterBy={filterBy}
-              onFilterChange={setFilterBy}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-            />
+          {/* Fixed layout for filters and search - prevents overflow */}
+          <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between mb-6 mt-6">
+            <div className="w-full sm:flex-1">
+              <TaskFilters
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSortChange={setSortBy}
+                filterBy={filterBy}
+                onFilterChange={setFilterBy}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
+            </div>
           </div>
 
           <section className="border-red-600 -rotate-2 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
