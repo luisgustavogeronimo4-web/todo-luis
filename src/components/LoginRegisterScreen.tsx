@@ -112,7 +112,7 @@ export const LoginRegisterScreen = () => {
                   disabled={loading || !email.trim()}
                   className="w-full bg-red-600 hover:bg-red-800 text-white font-bold -rotate-1 transition-colors"
                 >
-                  {logging ? "Logging in..." : "Login"}
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               </form>
             </TabsContent>
