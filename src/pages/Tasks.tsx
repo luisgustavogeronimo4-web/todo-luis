@@ -41,6 +41,7 @@ export const Tasks = () => {
   const [filterBy, setFilterBy] = useState<"all" | "completed" | "pending">("all");
   const [sortBy, setSortBy] = useState<"created" | "due" | "priority">("created");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadTasks = async () => {
     try {
@@ -62,8 +63,20 @@ export const Tasks = () => {
 
   const filteredAndSortedTasks = useMemo(() => {
     let tasks = [...activeTasks];
+    
+    // Apply search filter
+    if (searchQuery) {
+      tasks = tasks.filter(task => 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (task.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false)
+      );
+    }
+    
+    // Apply filterBy
     if (filterBy === "completed") tasks = tasks.filter((t) => t.completed);
     else if (filterBy === "pending") tasks = tasks.filter((t) => !t.completed);
+    
+    // Apply sort
     tasks.sort((a, b) => {
       let comparison = 0;
       if (sortBy === "created")
@@ -80,7 +93,7 @@ export const Tasks = () => {
       return sortOrder === "asc" ? comparison : -comparison;
     });
     return tasks;
-  }, [activeTasks, filterBy, sortBy, sortOrder]);
+  }, [activeTasks, filterBy, sortBy, sortOrder, searchQuery]);
 
   const handleCreate = async (task: Omit<Task, "id" | "created_at" | "updated_at">) => {
     setIsCreating(true);
@@ -234,6 +247,8 @@ export const Tasks = () => {
               onSortChange={setSortBy}
               filterBy={filterBy}
               onFilterChange={setFilterBy}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
             />
           </div>
 
