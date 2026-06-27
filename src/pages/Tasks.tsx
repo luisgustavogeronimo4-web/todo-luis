@@ -34,7 +34,6 @@ export const Tasks = () => {
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmDescription, setConfirmDescription] = useState("");
-
   const [editOpen, setEditOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [formKey, setFormKey] = useState(0);
@@ -51,9 +50,8 @@ export const Tasks = () => {
       ]);
       setActiveTasks(active);
       setTrashTasks(deleted);
-    } catch (err: any) {
-      console.error("loadTasks error:", err.message);
-      toast.error("Failed to load tasks");
+    } catch {
+      toast.error("Operation failed");
     }
   };
 
@@ -64,7 +62,6 @@ export const Tasks = () => {
   const filteredAndSortedTasks = useMemo(() => {
     let tasks = [...activeTasks];
     
-    // Apply search filter
     if (searchQuery) {
       tasks = tasks.filter(task => 
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -72,11 +69,9 @@ export const Tasks = () => {
       );
     }
     
-    // Apply filterBy
     if (filterBy === "completed") tasks = tasks.filter((t) => t.completed);
     else if (filterBy === "pending") tasks = tasks.filter((t) => !t.completed);
     
-    // Apply sort
     tasks.sort((a, b) => {
       let comparison = 0;
       if (sortBy === "created")
@@ -102,8 +97,8 @@ export const Tasks = () => {
       if (created && !created.completed) setActiveTasks((prev) => [created, ...prev]);
       toast.success("Task created");
       setFormKey((k) => k + 1);
-    } catch (err: any) {
-      toast.error(err.message ?? "Failed to create task");
+    } catch {
+      toast.error("Operation failed");
     } finally {
       setIsCreating(false);
     }
@@ -117,7 +112,7 @@ export const Tasks = () => {
       );
       toast.success("Task status updated");
     } catch {
-      toast.error("Failed to update task");
+      toast.error("Operation failed");
     }
   };
 
@@ -145,8 +140,8 @@ export const Tasks = () => {
       });
       setActiveTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
       toast.success("Task updated");
-    } catch (err: any) {
-      toast.error(err.message ?? "Failed to update task");
+    } catch {
+      toast.error("Operation failed");
     } finally {
       setIsUpdating(null);
       setEditOpen(false);
@@ -164,10 +159,10 @@ export const Tasks = () => {
           setTrashTasks(trash);
           toast.success("Task moved to trash");
         } else {
-          toast.error("Failed to move task");
+          toast.error("Operation failed");
         }
       } catch {
-        toast.error("Failed to move task");
+        toast.error("Operation failed");
       }
     });
   };
@@ -183,10 +178,10 @@ export const Tasks = () => {
           setTrashTasks(trash);
           toast.success("Task restored");
         } else {
-          toast.error("Failed to restore task");
+          toast.error("Operation failed");
         }
       } catch {
-        toast.error("Failed to restore task");
+        toast.error("Operation failed");
       }
     });
   };
@@ -199,10 +194,10 @@ export const Tasks = () => {
           setTrashTasks((prev) => prev.filter((t) => t.id !== id));
           toast.success("Task permanently deleted");
         } else {
-          toast.error("Failed to delete task");
+          toast.error("Operation failed");
         }
       } catch {
-        toast.error("Failed to delete task");
+        toast.error("Operation failed");
       }
     });
   };
@@ -240,7 +235,6 @@ export const Tasks = () => {
             </CardContent>
           </Card>
 
-          {/* Fixed layout for filters and search - prevents overflow */}
           <div className="w-full flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between mb-6 mt-6">
             <div className="w-full sm:flex-1">
               <TaskFilters

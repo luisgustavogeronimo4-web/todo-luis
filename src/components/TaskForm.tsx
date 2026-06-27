@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +17,9 @@ interface TaskFormProps {
   };
   isSubmitting?: boolean;
 }
+
+// Simple HTML‑tag stripper
+const stripHtml = (str: string) => str.replace(/<[^>]*>/g, "").trim();
 
 export const TaskForm = ({
   onSubmit,
@@ -35,7 +40,6 @@ export const TaskForm = ({
       const selectedDate = new Date(dueDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
       if (selectedDate < today) {
         setError("Due date cannot be in the past");
         return;
@@ -45,9 +49,10 @@ export const TaskForm = ({
     setError(null);
     
     if (!title.trim()) return;
+    
     onSubmit({
-      title: title.trim(),
-      description: description.trim(),
+      title: stripHtml(title).trim(),
+      description: stripHtml(description).trim(),
       due_date: dueDate || undefined,
       priority: priority,
     });

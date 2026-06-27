@@ -20,8 +20,8 @@ export const LoginRegisterScreen = () => {
     try {
       await login(email, password);
       navigate("/", { replace: true });
-    } catch (err: any) {
-      alert(err.message ?? "Login failed");
+    } catch {
+      alert("Login failed");
     } finally {
       setLoading(false);
     }
@@ -33,8 +33,8 @@ export const LoginRegisterScreen = () => {
     try {
       await signup(email, password);
       navigate("/", { replace: true });
-    } catch (err: any) {
-      alert(err.message ?? "Sign up failed");
+    } catch {
+      alert("Sign up failed");
     } finally {
       setLoading(false);
     }

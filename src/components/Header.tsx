@@ -12,6 +12,7 @@ export const Header = () => {
   const { setTheme, theme } = useTheme();
 
   const handleLogout = async () => {
+    if (!window.confirm("Tem certeza que deseja sair?")) return;
     await logout();
     navigate("/login", { replace: true });
   };
@@ -47,7 +48,7 @@ export const Header = () => {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="border-2 border-white text-white hover:bg-white hover:text-red-600 rotate-1"
+            className="border-2 border-white text-white hover:bg-white hover:text-red-600 -rotate-1"
           >
             <LogOut className="h-4 w-4 mr-1" />
             Sair
@@ -57,7 +58,7 @@ export const Header = () => {
             variant="ghost"
             size="sm"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="border-2 border-white text-white hover:bg-white hover:text-red-600 rotate-1"
+            className="border-2 border-white text-white hover:bg-white hover:text-red-600 -rotate-1"
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
