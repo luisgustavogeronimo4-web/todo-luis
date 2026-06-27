@@ -69,18 +69,20 @@ export const LoginRegisterScreen = () => {
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue={activeTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 bg-red-600 -rotate-1">
               <TabsTrigger
                 value="login"
-                onValueChange={() => setActiveTab("login")}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors"
               >
                 Login
               </TabsTrigger>
               <TabsTrigger
                 value="register"
-                onValueChange={() => setActiveTab("register")}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors"
               >
                 Register
