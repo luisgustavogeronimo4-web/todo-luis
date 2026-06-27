@@ -19,6 +19,7 @@ export const LoginRegisterScreen = () => {
     setLoading(true);
     try {
       await login(email, password);
+      // Redirecionamento estático rígido e seguro
       navigate("/", { replace: true });
     } catch {
       alert("Login failed");
@@ -68,7 +69,6 @@ export const LoginRegisterScreen = () => {
             <span className="block text-2xl font-light text-white -rotate-2">S</span>
           </div>
 
-          {/* Tabs - onValueChange removido para evitar o erro do React */}
           <Tabs
             value={activeTab}
             className="w-full"
